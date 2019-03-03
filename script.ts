@@ -11,6 +11,38 @@ let day : number = 24 * hour;
 
 var countdown : number = undefined;
 
+let months : Array<string> = [
+	"", //this is here because we start counting at 1
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
+];
+
+function hasValue(data: JSON, key: string) : boolean {
+	return data.hasOwnProperty(key) && data[key] !== null;
+}
+
+function hasYear(waifu : JSON) : boolean {
+	return hasValue(waifu, "year");
+}
+
+function hasMonth(waifu : JSON) : boolean {
+	return hasValue(waifu, "month");
+}
+
+function hasDay(waifu : JSON) : boolean {
+	return hasValue(waifu, "day-of-month");
+}
+
 function getCountdownHTML(countdownTime : number) : string {
 	//sanity check
 	if (countdownTime === undefined) return;
@@ -34,11 +66,11 @@ function getCountdownHTML(countdownTime : number) : string {
 
 function getAgeHTML(waifu : JSON) : string {
 	let html : string = "";
-	if (waifu.hasOwnProperty("year") && waifu["year"] !== null) {
+	if (hasYear(waifu)) {
 		let currentDate : Date = new Date();
 		let age : number = currentDate.getFullYear() - waifu["year"];
 		//take into count the month
-		if (waifu.hasOwnProperty("month") && waifu["month"] !== null) {
+		if (hasMonth(waifu)) {
 			let month : number = waifu["month"];
 			let currentMonth : number = currentDate.getMonth() + 1;
 			if (
@@ -47,9 +79,9 @@ function getAgeHTML(waifu : JSON) : string {
 				) || (
 					//take into count the day
 					currentMonth === month &&
-					waifu.hasOwnProperty("day") &&
-					waifu["day"] !== null &&
-					currentDate.getDay() < waifu["day"]
+					waifu.hasOwnProperty("day-of-month") &&
+					waifu["day-of-month"] !== null &&
+					currentDate.getDay() < waifu["day-of-month"]
 				)
 			) {
 				--age;
@@ -73,16 +105,16 @@ function getAgeHTML(waifu : JSON) : string {
 }
 
 function getBirthDate(waifu : JSON, yearsOffset : number = 0) : Date {
-	if (!waifu.hasOwnProperty("year") || waifu["year"] === null) {
+	if (!hasYear(waifu)) {
 		return new Date();
 	}
 	let year : number = waifu["year"] + yearsOffset;
-	if (!waifu.hasOwnProperty("month") || waifu["month"] === null) {
+	if (!hasMonth(waifu)) {
 		return new Date(year);
-	} else if (!waifu.hasOwnProperty("day") || waifu["day"] === null) {
+	} else if (!hasDay(waifu)) {
 		return new Date(year, waifu["month"]);
 	} else {
-		return new Date(year, waifu["month"], waifu["day"]);
+		return new Date(year, waifu["month"], waifu["day-of-month"]);
 	}
 }
 
@@ -137,6 +169,18 @@ function onWaifuSearch() : void {
 			newHTML += englishName;
 			newHTML += "\"><br>\n";
 		}
+
+		//display birthday
+		if (hasMonth(data)) {
+			newHTML += months[Number(data["month"])] + " ";
+		}
+		if (hasDay(data)) {
+			newHTML += data["day-of-month"].toString() + ", ";
+		}
+		if (hasYear(data)) {
+			newHTML += data["year"].toString();
+		}
+		newHTML += "<br>\n"
 
 		// Calculate data
 		newHTML += "<div id=\"dynamic-data\">\n"
