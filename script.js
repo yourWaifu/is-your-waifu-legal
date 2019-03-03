@@ -8,7 +8,6 @@ var hour = 60 * minute;
 var day = 24 * hour;
 var countdown = undefined;
 var months = [
-    "",
     "January",
     "February",
     "March",
@@ -99,7 +98,7 @@ function getBirthDate(waifu, yearsOffset) {
         return new Date(year);
     }
     else if (!hasDay(waifu)) {
-        return new Date(year, waifu["month"]);
+        return new Date(year, waifu["month"] - 1);
     }
     else {
         return new Date(year, waifu["month"], waifu["day-of-month"]);

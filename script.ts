@@ -12,7 +12,6 @@ let day : number = 24 * hour;
 var countdown : number = undefined;
 
 let months : Array<string> = [
-	"", //this is here because we start counting at 1
 	"January",
 	"February",
 	"March",
@@ -112,7 +111,7 @@ function getBirthDate(waifu : JSON, yearsOffset : number = 0) : Date {
 	if (!hasMonth(waifu)) {
 		return new Date(year);
 	} else if (!hasDay(waifu)) {
-		return new Date(year, waifu["month"]);
+		return new Date(year, waifu["month"] - 1);
 	} else {
 		return new Date(year, waifu["month"], waifu["day-of-month"]);
 	}
