@@ -1,5 +1,114 @@
 //Warning make sure you are editing the ts file and not the js file
 var legalAge = 18;
+//units
+var millisecond = 1;
+var second = 1000 * millisecond;
+var minute = 60 * second;
+var hour = 60 * minute;
+var day = 24 * hour;
+var countdown = undefined;
+var months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+function hasValue(data, key) {
+    return data.hasOwnProperty(key) && data[key] !== null;
+}
+function hasYear(waifu) {
+    return hasValue(waifu, "year");
+}
+function hasMonth(waifu) {
+    return hasValue(waifu, "month");
+}
+function hasDay(waifu) {
+    return hasValue(waifu, "day-of-month");
+}
+function getCountdownHTML(countdownTime) {
+    //sanity check
+    if (countdownTime === undefined)
+        return;
+    var currentDate = new Date();
+    var currentTime = currentDate.getTime();
+    var difference = countdownTime - currentTime;
+    var seconds = Math.floor((difference % minute) / second);
+    var minutes = Math.floor((difference % hour) / minute);
+    var hours = Math.floor((difference % day) / hour);
+    var days = Math.floor(difference / day);
+    //To do calculate years, take into account leap years.
+    var html = "Countdown to 18th birthday: ";
+    html += days + " days ";
+    html += hours + " hours ";
+    html += minutes + " minutes ";
+    html += seconds + " seconds<br>\n";
+    return html;
+}
+function getAgeHTML(waifu) {
+    var html = "";
+    if (hasYear(waifu)) {
+        var currentDate = new Date();
+        var age = currentDate.getFullYear() - waifu["year"];
+        //take into count the month
+        if (hasMonth(waifu)) {
+            var month = waifu["month"];
+            var currentMonth = currentDate.getMonth() + 1;
+            if ((currentMonth < month) || (
+            //take into count the day
+            currentMonth === month &&
+                waifu.hasOwnProperty("day-of-month") &&
+                waifu["day-of-month"] !== null &&
+                currentDate.getDay() < waifu["day-of-month"])) {
+                --age;
+            }
+        }
+        html += "age: ";
+        html += age.toString();
+        html += " years old<br>\n";
+        if (legalAge <= age) {
+            html += "Looks legal to me.<br>\n";
+        }
+        else {
+            html += "Not legal<br>\n" +
+                "Wait ";
+            html += legalAge - age;
+            html += " more years.<br>\n";
+        }
+    }
+    else {
+        html += "Year of birth is unknown. Sorry.<br>\n";
+    }
+    return html;
+}
+function getBirthDate(waifu, yearsOffset) {
+    if (yearsOffset === void 0) { yearsOffset = 0; }
+    if (!hasYear(waifu)) {
+        return new Date();
+    }
+    var year = waifu["year"] + yearsOffset;
+    if (!hasMonth(waifu)) {
+        return new Date(year);
+    }
+    else if (!hasDay(waifu)) {
+        return new Date(year, waifu["month"] - 1);
+    }
+    else {
+        return new Date(year, waifu["month"], waifu["day-of-month"]);
+    }
+}
+function getDynamicDataHTML(waifu) {
+    var html = getAgeHTML(waifu);
+    html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
+    return html;
+}
 function onWaifuSearch() {
     var input = document.getElementById("waifu-search").value;
     var output = document.getElementById("output");
@@ -36,46 +145,57 @@ function onWaifuSearch() {
         newHTML += "<h1>";
         newHTML += englishName;
         newHTML += "</h1>\n";
-        if (data.hasOwnProperty("image") && data["image"] !== null) {
+        //display waifu image
+        if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
             newHTML += "<img src=\"";
             newHTML += data["image"];
             newHTML += "\" alt=\"";
             newHTML += englishName;
             newHTML += "\"><br>\n";
         }
-        // Calculate age
-        if (data.hasOwnProperty("year") && data["year"] !== null) {
-            var currentDate = new Date();
-            var age = currentDate.getFullYear() - data["year"];
-            //take into count the month
-            if (data.hasOwnProperty("month") && data["month"] !== null) {
-                var month = data["month"];
-                var currentMonth = currentDate.getMonth();
-                if ((currentMonth < month) || (
-                //take into count the day
-                currentMonth === month &&
-                    data.hasOwnProperty("day") &&
-                    data["day"] !== null &&
-                    currentDate.getDay() < data["day"])) {
-                    --age;
-                }
-            }
-            newHTML += "age: ";
-            newHTML += age.toString();
-            newHTML += " years old<br>\n";
-            if (legalAge <= age) {
-                newHTML += "Looks legal to me.<br>\n";
-            }
-            else {
-                newHTML += "Not legal<br>\n" +
-                    "Wait ";
-                newHTML += legalAge - age;
-                newHTML += " more years.";
-            }
+        //display birthday
+        if (hasMonth(data)) {
+            newHTML += months[Number(data["month"]) - 1] + " ";
         }
-        else {
-            newHTML += "Year of birth is unknown. Sorry.";
+        if (hasDay(data)) {
+            newHTML += data["day-of-month"].toString() + ", ";
         }
+        if (hasYear(data)) {
+            newHTML += data["year"].toString();
+        }
+        newHTML += "<br>\n";
+        // Calculate data
+        newHTML += "<div id=\"dynamic-data\">\n";
+        newHTML += getDynamicDataHTML(data);
+        newHTML += "</div>\n";
+        //make countdown
+        if (countdown !== undefined) {
+            clearInterval(countdown);
+        }
+        countdown = setInterval(function () {
+            var countdownElement = document.getElementById("dynamic-data");
+            countdownElement.innerHTML = getDynamicDataHTML(data);
+        }, 1 * second);
+        //list notes and sources
+        function createListHtml(jsonKey, displayName) {
+            var html = "";
+            if (!data.hasOwnProperty(jsonKey) || data[jsonKey] === null || data[jsonKey].length === 0) {
+                return html;
+            }
+            html += "<br>";
+            html += displayName;
+            html += ":<br>\n<ul>\n";
+            var values = data[jsonKey];
+            values.forEach(function (value) {
+                html += "<li>";
+                html += value;
+                html += "</li>\n";
+            });
+            html += "</ul>\n";
+            return html;
+        }
+        newHTML += createListHtml("notes", "Notes");
+        newHTML += createListHtml("sources", "Sources");
         output.innerHTML = newHTML;
     };
     request.send();
