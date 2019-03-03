@@ -6,7 +6,7 @@ function onWaifuSearch() : void {
 	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
 	let output : HTMLElement = document.getElementById("output");
 	let request : XMLHttpRequest = new XMLHttpRequest();
-	request.open("GET", "https://raw.githubusercontent.com/yourWaifu/is-this-waifu-legal/master/waifus/" + input + ".json");
+	request.open("GET", "https://raw.githubusercontent.com/yourWaifu/is-your-waifu-legal/master/waifus/" + input + ".json");
 	request.responseType = "json";
 	request.onerror = function(event) {
 		console.log(event);
@@ -18,11 +18,11 @@ function onWaifuSearch() : void {
 			break;
 		case 404:
 			output.innerHTML = 
-				"Could not find this person. Sorry.\n"
-				"Maybe you spelled her name wrong.\n"
-				"If you know her age, "
-				"<a href=\"https://github.com/yourWaifu/is-this-waifu-legal#How-to-add-a-waifu-to-the-list\">"
-					"please add her"
+				"Could not find this person. Sorry.\n" +
+				"Maybe you spelled her name wrong.\n" +
+				"If you know her age, " +
+				"<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
+					"please add her" +
 				"</a>.";
 			return;
 		default:
@@ -33,7 +33,7 @@ function onWaifuSearch() : void {
 		let newHTML : string = "";
 		newHTML += "<h1>"
 		newHTML += data["english-name"];
-		newHTML += "</h1>/n"
+		newHTML += "</h1>\n"
 		
 		// Calculate age
 		if (data.hasOwnProperty("year") && data["year"] !== null) {
@@ -60,10 +60,10 @@ function onWaifuSearch() : void {
 			newHTML += "age: ";
 			newHTML += age.toString();
 			newHTML += " years old\n"
-			if (legalAge < age) {
+			if (legalAge <= age) {
 				newHTML += "Looks legal to me.\n"
 			} else {
-				newHTML += "Not legal\n"
+				newHTML += "Not legal\n" +
 				"Wait "
 				newHTML += legalAge - age;
 				newHTML += " more years."

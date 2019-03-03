@@ -4,7 +4,7 @@ function onWaifuSearch() {
     var input = document.getElementById("waifu-search").value;
     var output = document.getElementById("output");
     var request = new XMLHttpRequest();
-    request.open("GET", "https://raw.githubusercontent.com/yourWaifu/is-this-waifu-legal/master/waifus/" + input + ".json");
+    request.open("GET", "https://raw.githubusercontent.com/yourWaifu/is-your-waifu-legal/master/waifus/" + input + ".json");
     request.responseType = "json";
     request.onerror = function (event) {
         console.log(event);
@@ -16,12 +16,12 @@ function onWaifuSearch() {
                 break;
             case 404:
                 output.innerHTML =
-                    "Could not find this person. Sorry.\n";
-                "Maybe you spelled her name wrong.\n";
-                "If you know her age, ";
-                "<a href=\"https://github.com/yourWaifu/is-this-waifu-legal#How-to-add-a-waifu-to-the-list\">";
-                "please add her";
-                "</a>.";
+                    "Could not find this person. Sorry.\n" +
+                        "Maybe you spelled her name wrong.\n" +
+                        "If you know her age, " +
+                        "<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
+                        "please add her" +
+                        "</a>.";
                 return;
             default:
                 output.innerHTML = "Error " + this.status.toString();
@@ -31,7 +31,7 @@ function onWaifuSearch() {
         var newHTML = "";
         newHTML += "<h1>";
         newHTML += data["english-name"];
-        newHTML += "</h1>/n";
+        newHTML += "</h1>\n";
         // Calculate age
         if (data.hasOwnProperty("year") && data["year"] !== null) {
             var currentDate = new Date();
@@ -52,12 +52,12 @@ function onWaifuSearch() {
             newHTML += "age: ";
             newHTML += age.toString();
             newHTML += " years old\n";
-            if (legalAge < age) {
+            if (legalAge <= age) {
                 newHTML += "Looks legal to me.\n";
             }
             else {
-                newHTML += "Not legal\n";
-                "Wait ";
+                newHTML += "Not legal\n" +
+                    "Wait ";
                 newHTML += legalAge - age;
                 newHTML += " more years.";
             }
