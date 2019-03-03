@@ -1,6 +1,16 @@
+<meta charset="utf-8"/>
 <script src="script.js"></script> 
 <h1>Is Your Waifu Legal?</h1>
-<input id="waifu-search" type="text" placeholder="Enter Waifu's Full Name Here" name="search">
+<input 
+	id="waifu-search"
+	type="text"
+	placeholder="Enter Waifu's Full Name Here"
+	name="search"
+	style="width: 10vw;"
+	onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
+>
 <br>
 <button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
 <div id="output"></div>
+<br><br>
+<p><a href="https://github.com/yourWaifu/is-your-waifu-legal">View Github Repository</a></p>

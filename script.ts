@@ -5,8 +5,9 @@ var legalAge = 18;
 function onWaifuSearch() : void {
 	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
 	let output : HTMLElement = document.getElementById("output");
+	output.innerHTML = "";
 	let request : XMLHttpRequest = new XMLHttpRequest();
-	request.open("GET", "https://raw.githubusercontent.com/yourWaifu/is-your-waifu-legal/master/waifus/" + input + ".json");
+	request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input + ".json");
 	request.responseType = "json";
 	request.onerror = function(event) {
 		console.log(event);
@@ -17,24 +18,35 @@ function onWaifuSearch() : void {
 		case 200: //OK
 			break;
 		case 404:
-			output.innerHTML = 
-				"Could not find this person. Sorry.\n" +
-				"Maybe you spelled her name wrong.\n" +
+			output.innerHTML =
+				"Could not find this person. Sorry.<br>\n" +
+				"Maybe you spelled her name wrong.<br>\n" +
+				"Maybe you forgot to enter her full name.<br>\n" +
 				"If you know her age, " +
 				"<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
 					"please add her" +
-				"</a>.";
+				"</a>."
 			return;
 		default:
-			output.innerHTML = "Error " + this.status.toString();
+			output.innerHTML =
+				"Error " + this.status.toString()
 			return;
 		}
 		let data : JSON = this.response;
+		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
 		let newHTML : string = "";
 		newHTML += "<h1>"
-		newHTML += data["english-name"];
+		newHTML += englishName;
 		newHTML += "</h1>\n"
-		
+
+		if (data.hasOwnProperty("image") && data["image"] !== null) {
+			newHTML += "<img src=\"";
+			newHTML += data["image"];
+			newHTML += "\" alt=\""
+			newHTML += englishName;
+			newHTML += "\"><br>\n";
+		}
+
 		// Calculate age
 		if (data.hasOwnProperty("year") && data["year"] !== null) {
 			let currentDate : Date = new Date();
@@ -59,11 +71,11 @@ function onWaifuSearch() : void {
 			}
 			newHTML += "age: ";
 			newHTML += age.toString();
-			newHTML += " years old\n"
+			newHTML += " years old<br>\n"
 			if (legalAge <= age) {
-				newHTML += "Looks legal to me.\n"
+				newHTML += "Looks legal to me.<br>\n"
 			} else {
-				newHTML += "Not legal\n" +
+				newHTML += "Not legal<br>\n" +
 				"Wait "
 				newHTML += legalAge - age;
 				newHTML += " more years."
