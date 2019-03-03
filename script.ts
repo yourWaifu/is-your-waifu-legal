@@ -171,7 +171,7 @@ function onWaifuSearch() : void {
 
 		//display birthday
 		if (hasMonth(data)) {
-			newHTML += months[Number(data["month"])] + " ";
+			newHTML += months[Number(data["month"]) - 1] + " ";
 		}
 		if (hasDay(data)) {
 			newHTML += data["day-of-month"].toString() + ", ";
