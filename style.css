@@ -1,6 +1,7 @@
 .header {
 	position: static;
 	display: flex;
+	background-color: #181818;
 }
 
 .header-flex {
@@ -8,11 +9,13 @@
 	list-style: none;
 	width: auto;
 	padding-left: 0em;
+	margin: 8 0 8 0;
 }
 
 .left {
 	flex: 0 0 auto; /*Don't change size*/
 	line-height: 1.3; /*align text baseline*/
+	margin-left: 8;
 }
 
 .right {
@@ -20,12 +23,34 @@
 	width: auto;
 	justify-content: flex-end;
 	flex: 0 0 auto;
+	margin-right: 8;
 }
 
 .middle {
 	flex: 1 0 auto; /*Grow, but don't shrink*/
+	margin-left: 8;
+	margin-right: 8;
 }
 
 .github {
 	text-align: right;
+}
+
+/*
+Copied from
+https://github.com/yourWaifu/yourWaifu.github.io/blob/master/style.css
+*/
+body {
+	margin: 0 auto;
+	background-color: #212121;
+	font-family: 'Open Sans', sans-serif;
+	color: white;
+}
+
+a {
+	color: #64b8fc;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
 }
