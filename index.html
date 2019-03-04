@@ -6,27 +6,29 @@
 </head>
 <body>
 	<section class="header">
-		<div class="header-flex left">
-			Is Your Waifu Legal?
-		</div>
-		<div class="header-flex middle">
-			<input 
-				id="waifu-search"
-				type="text"
-				placeholder="Enter Waifu's Full Name Here"
-				name="search"
-				style="width: 100%;"
-				onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
-			>
-			<!--Note: \r is the enter key on the keyboard-->
-		</div>
-		<div class="header-flex right">
-				<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
-			<span class="github">
-				<a href="https://github.com/yourWaifu/is-your-waifu-legal">
-					<i class="fab fa-github"></i>
-				</a>
-			</span>
+		<div class="header-container">
+			<div class="header-flex left title">
+				Is Your Waifu Legal?
+			</div>
+			<div class="header-flex middle">
+				<input 
+					id="waifu-search"
+					type="text"
+					placeholder="Enter Waifu's Full Name Here"
+					name="search"
+					class="search-box"
+					onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
+				>
+				<!--Note: \r is the enter key on the keyboard-->
+			</div>
+			<div class="header-flex right">
+					<button id="waifu-search-button" onclick="onWaifuSearch();" style="bottom:0">Is She Legal?</button>
+				<span class="github">
+					<a href="https://github.com/yourWaifu/is-your-waifu-legal">
+						<i class="fab fa-github fa-2x"></i>
+					</a>
+				</span>
+			</div>
 		</div>
 	</section>
 </body>

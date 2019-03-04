@@ -1,7 +1,12 @@
 .header {
 	position: static;
-	display: flex;
 	background-color: #181818;
+	box-shadow: 0 0 12px black;
+}
+
+.header-container {
+	margin: 0 auto;
+	display: flex;
 }
 
 .header-flex {
@@ -14,7 +19,6 @@
 
 .left {
 	flex: 0 0 auto; /*Don't change size*/
-	line-height: 1.3; /*align text baseline*/
 	margin-left: 8;
 }
 
@@ -30,10 +34,23 @@
 	flex: 1 0 auto; /*Grow, but don't shrink*/
 	margin-left: 8;
 	margin-right: 8;
+	position: relative; /*For some reason the search box needs this*/
 }
 
 .github {
 	text-align: right;
+}
+
+.github a {
+	color: white;
+}
+
+.github a:hover {
+	color: darkgray;
+}
+
+.github i {
+	padding-top: .1em;
 }
 
 /*
@@ -53,4 +70,19 @@ a {
 }
 a:hover {
 	text-decoration: underline;
+}
+
+.title {
+	font-size: 2em;
+}
+
+.search-box {
+	width: 100%;
+	position: absolute;
+	bottom: .15em;
+	background-color: transparent;
+	border-top-color: transparent;
+	border-left: transparent;
+	border-right: transparent;
+	color: white;
 }
