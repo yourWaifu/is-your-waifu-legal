@@ -1,4 +1,4 @@
-# is-this-waifu-legal
+# [Is This Waifu Legal](https://yourwaifu.dev/is-your-waifu-legal/)
 
 It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some people (Not us), have issues with lolis in NSFW stuff, which is why this tool exist. This tool's purpose is to make it easy to calculate the **current** age of a waifu.
 
@@ -11,8 +11,9 @@ It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some
 6. Click the Create new file button.
 7. Name it the english name.json
 8. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/Futaba%20Sakura.json)
-9. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
-10. Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
+9. Save and commit changes.
+10. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
+11. Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
 
 # FAQ
 
