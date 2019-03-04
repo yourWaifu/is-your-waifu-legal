@@ -44,7 +44,9 @@ function hasDay(waifu : JSON) : boolean {
 
 function getCountdownHTML(countdownTime : number) : string {
 	//sanity check
-	if (countdownTime === undefined) return;
+	if (countdownTime === undefined) {
+		return;
+	}
 
 	let currentDate : Date = new Date();
 	let currentTime : number = currentDate.getTime();
@@ -91,11 +93,26 @@ function getAgeHTML(waifu : JSON) : string {
 		html += " years old<br>\n"
 		if (legalAge <= age) {
 			html += "Looks legal to me.<br>\n"
+			//stop timer
+			if (countdown !== undefined) {
+				clearInterval(countdown);
+				//congrats, your waifu is now of legal age
+			}
 		} else {
 			html += "Not legal<br>\n" +
 				"Wait ";
 			html += legalAge - age;
 			html += " more years.<br>\n"
+
+			//We need to start the timer before we can display it
+			if (countdown === undefined) {
+				countdown = setInterval(function() {
+					let countdownElement : HTMLElement = document.getElementById("dynamic-data");
+					countdownElement.innerHTML = getDynamicDataHTML(waifu);
+				}, 1 * second);
+			}
+
+			html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
 		}
 	} else {
 		html += "Year of birth is unknown. Sorry.<br>\n"
@@ -118,13 +135,12 @@ function getBirthDate(waifu : JSON, yearsOffset : number = 0) : Date {
 }
 
 function getDynamicDataHTML(waifu : JSON) : string {
-	let html = getAgeHTML(waifu);
-	html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
-	return html;
+	return getAgeHTML(waifu);
 }
 
 function onWaifuSearch() : void {
 	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
+	input = input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
 	let output : HTMLElement = document.getElementById("output");
 	output.innerHTML = "";
 	let request : XMLHttpRequest = new XMLHttpRequest();
@@ -153,6 +169,13 @@ function onWaifuSearch() : void {
 				"Error " + this.status.toString()
 			return;
 		}
+
+		//clear values before starting
+		if (countdown !== undefined) {
+			clearInterval(countdown);
+			countdown = undefined;
+		}
+
 		let data : JSON = this.response;
 		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
 		let newHTML : string = "";
@@ -185,15 +208,6 @@ function onWaifuSearch() : void {
 		newHTML += "<div id=\"dynamic-data\">\n"
 		newHTML += getDynamicDataHTML(data);
 		newHTML += "</div>\n"
-
-		//make countdown
-		if (countdown !== undefined) {
-			clearInterval(countdown);
-		}
-		countdown = setInterval(function() {
-			let countdownElement : HTMLElement = document.getElementById("dynamic-data");
-			countdownElement.innerHTML = getDynamicDataHTML(data);
-		}, 1 * second);
 
 		//list notes and sources
 		function createListHtml(jsonKey:string, displayName:string) {

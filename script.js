@@ -35,8 +35,9 @@ function hasDay(waifu) {
 }
 function getCountdownHTML(countdownTime) {
     //sanity check
-    if (countdownTime === undefined)
+    if (countdownTime === undefined) {
         return;
+    }
     var currentDate = new Date();
     var currentTime = currentDate.getTime();
     var difference = countdownTime - currentTime;
@@ -75,12 +76,25 @@ function getAgeHTML(waifu) {
         html += " years old<br>\n";
         if (legalAge <= age) {
             html += "Looks legal to me.<br>\n";
+            //stop timer
+            if (countdown !== undefined) {
+                clearInterval(countdown);
+                //congrats, your waifu is now of legal age
+            }
         }
         else {
             html += "Not legal<br>\n" +
                 "Wait ";
             html += legalAge - age;
             html += " more years.<br>\n";
+            //We need to start the timer before we can display it
+            if (countdown === undefined) {
+                countdown = setInterval(function () {
+                    var countdownElement = document.getElementById("dynamic-data");
+                    countdownElement.innerHTML = getDynamicDataHTML(waifu);
+                }, 1 * second);
+            }
+            html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
         }
     }
     else {
@@ -105,12 +119,11 @@ function getBirthDate(waifu, yearsOffset) {
     }
 }
 function getDynamicDataHTML(waifu) {
-    var html = getAgeHTML(waifu);
-    html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
-    return html;
+    return getAgeHTML(waifu);
 }
 function onWaifuSearch() {
     var input = document.getElementById("waifu-search").value;
+    input = input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
     var output = document.getElementById("output");
     output.innerHTML = "";
     var request = new XMLHttpRequest();
@@ -138,6 +151,11 @@ function onWaifuSearch() {
                 output.innerHTML =
                     "Error " + this.status.toString();
                 return;
+        }
+        //clear values before starting
+        if (countdown !== undefined) {
+            clearInterval(countdown);
+            countdown = undefined;
         }
         var data = this.response;
         var englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
@@ -168,14 +186,6 @@ function onWaifuSearch() {
         newHTML += "<div id=\"dynamic-data\">\n";
         newHTML += getDynamicDataHTML(data);
         newHTML += "</div>\n";
-        //make countdown
-        if (countdown !== undefined) {
-            clearInterval(countdown);
-        }
-        countdown = setInterval(function () {
-            var countdownElement = document.getElementById("dynamic-data");
-            countdownElement.innerHTML = getDynamicDataHTML(data);
-        }, 1 * second);
         //list notes and sources
         function createListHtml(jsonKey, displayName) {
             var html = "";
