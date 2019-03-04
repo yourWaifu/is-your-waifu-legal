@@ -114,6 +114,8 @@ function getAgeHTML(waifu : JSON) : string {
 
 			html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
 		}
+	} else if (hasValue(waifu, "definitely-legal")) {
+		html += "Definitely Legal<br>\n"
 	} else {
 		html += "Year of birth is unknown. Sorry.<br>\n"
 	}

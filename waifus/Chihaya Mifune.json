@@ -6,5 +6,6 @@
 	"year" : null,
 	"month" : null,
 	"day-of-month" : null,
+	"definitely-legal" : true,
 	"sources" : ["https://megamitensei.fandom.com/wiki/Chihaya_Mifune"]
 }
