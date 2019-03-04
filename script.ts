@@ -114,6 +114,8 @@ function getAgeHTML(waifu : JSON) : string {
 
 			html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
 		}
+	} else if (hasValue(waifu, "definitely-legal") && waifu["definitely-legal"] === true) {
+		html += "Definitely Legal<br>\n"
 	} else {
 		html += "Year of birth is unknown. Sorry.<br>\n"
 	}
@@ -197,9 +199,12 @@ function onWaifuSearch() : void {
 			newHTML += months[Number(data["month"]) - 1] + " ";
 		}
 		if (hasDay(data)) {
-			newHTML += data["day-of-month"].toString() + ", ";
+			newHTML += data["day-of-month"].toString();
 		}
 		if (hasYear(data)) {
+			if (hasMonth(data) || hasDay(data)) {
+				newHTML += ", ";
+			}
 			newHTML += data["year"].toString();
 		}
 		newHTML += "<br>\n"
