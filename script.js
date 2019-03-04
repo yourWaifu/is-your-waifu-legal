@@ -130,7 +130,7 @@ function onWaifuSearch() {
     var output = document.getElementById("output");
     output.innerHTML = "";
     var request = new XMLHttpRequest();
-    request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input + ".json");
+    request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
     request.responseType = "json";
     request.onerror = function (event) {
         console.log(event);
