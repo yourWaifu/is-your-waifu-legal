@@ -23,3 +23,11 @@ Well it depends on the anime and the waifu in question.
 ## If a waifu turns 18 in the show, what would happen if you fapped to the wrong season?
 
 [This](https://www.youtube.com/watch?v=08vk9g-jcsM)
+
+## Were we supposed to not fap before?
+
+It's the same answer to this question, Is it illegal to fap to underage fictional characters? I'll let you decide that for yourself.
+
+## Is this a joke?
+
+Yea
