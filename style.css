@@ -1,0 +1,25 @@
+.header {
+	position: static;
+	display: flex;
+	justify-content: space-between;
+}
+
+.header-flex {
+	margin: 0 auto;
+	list-style: none;
+	flex: 1 1 auto;
+	justify-content: space-between;
+	padding-left: 0em;
+}
+
+.header-flex p {
+	margin: 0 auto;
+}
+
+.right {
+	text-align: right;
+}
+
+.middle {
+	text-align: center;
+}

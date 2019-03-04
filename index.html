@@ -1,17 +1,29 @@
-<meta charset="utf-8"/>
-<script src="script.js"></script> 
-<h1>Is Your Waifu Legal?</h1>
-<input 
-	id="waifu-search"
-	type="text"
-	placeholder="Enter Waifu's Full Name Here"
-	name="search"
-	style="width: 10vw;"
-	onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
->
-<!--Note: \r is the enter key on the keyboard-->
-<br>
-<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
+<head>
+	<meta charset="utf-8"/>
+	<script src="script.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<section class="header">
+		<ul class="header-flex">
+			Is Your Waifu Legal?
+		</ul>
+		<ul class="header-flex middle">
+			<input 
+				id="waifu-search"
+				type="text"
+				placeholder="Enter Waifu's Full Name Here"
+				name="search"
+				style="width: 15em;"
+				onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
+			>
+			<!--Note: \r is the enter key on the keyboard-->
+			<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
+		</ul>
+		<ul class="header-flex right">
+			<p><a href="https://github.com/yourWaifu/is-your-waifu-legal">View Github Repository</a></p>
+		</ul>
+	</section>
+</body>
 <div id="output"></div>
 <br><br>
-<p><a href="https://github.com/yourWaifu/is-your-waifu-legal">View Github Repository</a></p>
