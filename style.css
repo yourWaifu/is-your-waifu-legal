@@ -30,6 +30,18 @@
 	margin-right: 8;
 }
 
+.right button {
+	background-color: transparent;
+	color: white;
+	border-style: none;
+	border-width: 0;	
+}
+
+.right button:hover {
+	color:darkgray;
+	cursor: pointer;
+}
+
 .middle {
 	flex: 1 0 auto; /*Grow, but don't shrink*/
 	margin-left: 8;
