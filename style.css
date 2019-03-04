@@ -1,25 +1,31 @@
 .header {
 	position: static;
 	display: flex;
-	justify-content: space-between;
 }
 
 .header-flex {
-	margin: 0 auto;
+	margin: 0;
 	list-style: none;
-	flex: 1 1 auto;
-	justify-content: space-between;
+	width: auto;
 	padding-left: 0em;
 }
 
-.header-flex p {
-	margin: 0 auto;
+.left {
+	flex: 0 0 auto; /*Don't change size*/
+	line-height: 1.3; /*align text baseline*/
 }
 
 .right {
 	text-align: right;
+	width: auto;
+	justify-content: flex-end;
+	flex: 0 0 auto;
 }
 
 .middle {
-	text-align: center;
+	flex: 1 0 auto; /*Grow, but don't shrink*/
+}
+
+.github {
+	text-align: right;
 }

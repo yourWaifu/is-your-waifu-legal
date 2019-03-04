@@ -5,24 +5,28 @@
 </head>
 <body>
 	<section class="header">
-		<ul class="header-flex">
+		<div class="header-flex left">
 			Is Your Waifu Legal?
-		</ul>
-		<ul class="header-flex middle">
+		</div>
+		<div class="header-flex middle">
 			<input 
 				id="waifu-search"
 				type="text"
 				placeholder="Enter Waifu's Full Name Here"
 				name="search"
-				style="width: 15em;"
+				style="width: 100%;"
 				onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
 			>
 			<!--Note: \r is the enter key on the keyboard-->
-			<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
-		</ul>
-		<ul class="header-flex right">
-			<p><a href="https://github.com/yourWaifu/is-your-waifu-legal">View Github Repository</a></p>
-		</ul>
+		</div>
+		<div class="header-flex right">
+				<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
+			<span class="github">
+				<a href="https://github.com/yourWaifu/is-your-waifu-legal">
+					View Github Repository
+				</a>
+			</span>
+		</div>
 	</section>
 </body>
 <div id="output"></div>
