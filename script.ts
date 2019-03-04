@@ -199,9 +199,12 @@ function onWaifuSearch() : void {
 			newHTML += months[Number(data["month"]) - 1] + " ";
 		}
 		if (hasDay(data)) {
-			newHTML += data["day-of-month"].toString() + ", ";
+			newHTML += data["day-of-month"].toString();
 		}
 		if (hasYear(data)) {
+			if (hasMonth(data) || hasDay(data)) {
+				newHTML += ", ";
+			}
 			newHTML += data["year"].toString();
 		}
 		newHTML += "<br>\n"
