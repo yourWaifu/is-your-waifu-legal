@@ -1,0 +1,100 @@
+.header {
+	position: static;
+	background-color: #181818;
+	box-shadow: 0 0 12px black;
+}
+
+.header-container {
+	margin: 0 auto;
+	display: flex;
+}
+
+.header-flex {
+	margin: 0;
+	list-style: none;
+	width: auto;
+	padding-left: 0em;
+	margin: 8 0 8 0;
+}
+
+.left {
+	flex: 0 0 auto; /*Don't change size*/
+	margin-left: 8;
+}
+
+.right {
+	text-align: right;
+	width: auto;
+	justify-content: flex-end;
+	flex: 0 0 auto;
+	margin-right: 8;
+}
+
+.right button {
+	background-color: transparent;
+	color: white;
+	border-style: none;
+	border-width: 0;	
+}
+
+.right button:hover {
+	color:darkgray;
+	cursor: pointer;
+}
+
+.middle {
+	flex: 1 0 auto; /*Grow, but don't shrink*/
+	margin-left: 8;
+	margin-right: 8;
+	position: relative; /*For some reason the search box needs this*/
+}
+
+.github {
+	text-align: right;
+}
+
+.github a {
+	color: white;
+}
+
+.github a:hover {
+	color: darkgray;
+}
+
+.github i {
+	padding-top: .1em;
+}
+
+/*
+Copied from
+https://github.com/yourWaifu/yourWaifu.github.io/blob/master/style.css
+*/
+body {
+	margin: 0 auto;
+	background-color: #212121;
+	font-family: 'Open Sans', sans-serif;
+	color: white;
+}
+
+a {
+	color: #64b8fc;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+.title {
+	font-size: 2em;
+}
+
+.search-box {
+	width: 100%;
+	position: absolute;
+	bottom: .15em;
+	background-color: transparent;
+	border-top-color: transparent;
+	border-left: transparent;
+	border-right: transparent;
+	color: white;
+}

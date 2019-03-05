@@ -1,17 +1,36 @@
-<meta charset="utf-8"/>
-<script src="script.js"></script> 
-<h1>Is Your Waifu Legal?</h1>
-<input 
-	id="waifu-search"
-	type="text"
-	placeholder="Enter Waifu's Full Name Here"
-	name="search"
-	style="width: 10vw;"
-	onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
->
-<!--Note: \r is the enter key on the keyboard-->
-<br>
-<button id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal?</button>
+<head>
+	<meta charset="utf-8"/>
+	<script src="script.js"></script>
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+</head>
+<body>
+	<section class="header">
+		<div class="header-container">
+			<div class="header-flex left title">
+				Is Your Waifu Legal?
+			</div>
+			<div class="header-flex middle">
+				<input 
+					id="waifu-search"
+					type="text"
+					placeholder="Enter Waifu's Full Name Here"
+					name="search"
+					class="search-box"
+					onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
+				>
+				<!--Note: \r is the enter key on the keyboard-->
+			</div>
+			<div class="header-flex right">
+					<button type="button" id="waifu-search-button" onclick="onWaifuSearch();">Is She Legal? <i class="fas fa-search fa-2x" style="margin-left:8;"></i></button>
+				<span class="github">
+					<a href="https://github.com/yourWaifu/is-your-waifu-legal">
+						<i class="fab fa-github fa-2x"></i>
+					</a>
+				</span>
+			</div>
+		</div>
+	</section>
+</body>
 <div id="output"></div>
 <br><br>
-<p><a href="https://github.com/yourWaifu/is-your-waifu-legal">View Github Repository</a></p>
