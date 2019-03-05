@@ -124,9 +124,8 @@ function getBirthDate(waifu, yearsOffset) {
 function getDynamicDataHTML(waifu) {
     return getAgeHTML(waifu);
 }
-function onWaifuSearch() {
-    var input = document.getElementById("waifu-search").value;
-    input = input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
+function displayWaifuStats(name) {
+    var input = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
     var output = document.getElementById("output");
     output.innerHTML = "";
     var request = new XMLHttpRequest();
@@ -216,3 +215,14 @@ function onWaifuSearch() {
     };
     request.send();
 }
+function onWaifuSearch() {
+    displayWaifuStats(document.getElementById("waifu-search").value);
+}
+//read query string values
+window.onload = function () {
+    var parms = new URLSearchParams(window.location.search);
+    var search = parms.get("q");
+    if (search !== null) {
+        displayWaifuStats(search);
+    }
+};

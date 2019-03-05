@@ -140,9 +140,8 @@ function getDynamicDataHTML(waifu : JSON) : string {
 	return getAgeHTML(waifu);
 }
 
-function onWaifuSearch() : void {
-	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
-	input = input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
+function displayWaifuStats(name : string) : void {
+	let input : string = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
 	let output : HTMLElement = document.getElementById("output");
 	output.innerHTML = "";
 	let request : XMLHttpRequest = new XMLHttpRequest();
@@ -239,4 +238,17 @@ function onWaifuSearch() : void {
 		output.innerHTML = newHTML;
 	}
 	request.send();
+}
+
+function onWaifuSearch() : void {
+	displayWaifuStats((<HTMLInputElement>document.getElementById("waifu-search")).value);
+}
+
+//read query string values
+window.onload = function () : void {
+	let parms : URLSearchParams = new URLSearchParams(window.location.search);
+	let search : string = parms.get("q");
+	if (search !== null) {
+		displayWaifuStats(search);
+	}
 }
