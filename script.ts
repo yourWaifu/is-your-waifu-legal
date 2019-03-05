@@ -149,7 +149,7 @@ function displayWaifuStats(name : string) : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string = parms.get("q");
 	if (search === null || search !== input) {
-		history.pushState({}, "", "?q=" + input);
+		history.pushState({"q":input}, "", "?q=" + input);
 	}
 
 	let request : XMLHttpRequest = new XMLHttpRequest();
@@ -260,3 +260,10 @@ window.onload = function () : void {
 		displayWaifuStats(search);
 	}
 }
+
+window.onpopstate = function(event) : void {
+	if (!hasValue(event.state, "q")) {
+		return;
+	}
+	displayWaifuStats(event.state["q"]);
+};

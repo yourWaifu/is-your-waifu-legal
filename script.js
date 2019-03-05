@@ -132,7 +132,7 @@ function displayWaifuStats(name) {
     var parms = new URLSearchParams(window.location.search);
     var search = parms.get("q");
     if (search === null || search !== input) {
-        history.pushState({}, "", "?q=" + input);
+        history.pushState({ "q": input }, "", "?q=" + input);
     }
     var request = new XMLHttpRequest();
     request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
@@ -231,4 +231,10 @@ window.onload = function () {
     if (search !== null) {
         displayWaifuStats(search);
     }
+};
+window.onpopstate = function (event) {
+    if (!hasValue(event.state, "q")) {
+        return;
+    }
+    displayWaifuStats(event.state["q"]);
 };
