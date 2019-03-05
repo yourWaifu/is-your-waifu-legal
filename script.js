@@ -171,6 +171,7 @@ function displayWaifuStats(name) {
         newHTML += "<h1>";
         newHTML += englishName;
         newHTML += "</h1>\n";
+        document.title = englishName + " - Is Your Waifu Legal?";
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
             newHTML += "<img src=\"";

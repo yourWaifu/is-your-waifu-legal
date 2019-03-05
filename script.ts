@@ -188,9 +188,10 @@ function displayWaifuStats(name : string) : void {
 		let data : JSON = this.response;
 		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
 		let newHTML : string = "";
-		newHTML += "<h1>"
+		newHTML += "<h1>";
 		newHTML += englishName;
-		newHTML += "</h1>\n"
+		newHTML += "</h1>\n";
+		document.title = englishName + " - Is Your Waifu Legal?";
 
 		//display waifu image
 		if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
