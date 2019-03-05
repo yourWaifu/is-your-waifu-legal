@@ -144,6 +144,14 @@ function displayWaifuStats(name : string) : void {
 	let input : string = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
 	let output : HTMLElement = document.getElementById("output");
 	output.innerHTML = "";
+
+	//add search to history
+	let parms : URLSearchParams = new URLSearchParams(window.location.search);
+	let search : string = parms.get("q");
+	if (search === null || search !== input) {
+		history.pushState({}, "", "?q=" + input);
+	}
+
 	let request : XMLHttpRequest = new XMLHttpRequest();
 	request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
 	request.responseType = "json";

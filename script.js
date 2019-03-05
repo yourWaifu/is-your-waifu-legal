@@ -128,6 +128,12 @@ function displayWaifuStats(name) {
     var input = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
     var output = document.getElementById("output");
     output.innerHTML = "";
+    //add search to history
+    var parms = new URLSearchParams(window.location.search);
+    var search = parms.get("q");
+    if (search === null || search !== input) {
+        history.pushState({}, "", "?q=" + input);
+    }
     var request = new XMLHttpRequest();
     request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
     request.responseType = "json";
