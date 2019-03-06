@@ -1,14 +1,14 @@
 //Warning make sure you are editing the ts file and not the js file
 var legalAge = 18;
-var siteName = "Is Your Waifu Legal?";
+let siteName = "Is Your Waifu Legal?";
 //units
-var millisecond = 1;
-var second = 1000 * millisecond;
-var minute = 60 * second;
-var hour = 60 * minute;
-var day = 24 * hour;
-var countdown = undefined;
-var months = [
+let millisecond = 1;
+let second = 1000 * millisecond;
+let minute = 60 * second;
+let hour = 60 * minute;
+let day = 24 * hour;
+var countdown = -1;
+let months = [
     "January",
     "February",
     "March",
@@ -37,17 +37,17 @@ function hasDay(waifu) {
 function getCountdownHTML(countdownTime) {
     //sanity check
     if (countdownTime === undefined) {
-        return;
+        return "";
     }
-    var currentDate = new Date();
-    var currentTime = currentDate.getTime();
-    var difference = countdownTime - currentTime;
-    var seconds = Math.floor((difference % minute) / second);
-    var minutes = Math.floor((difference % hour) / minute);
-    var hours = Math.floor((difference % day) / hour);
-    var days = Math.floor(difference / day);
+    let currentDate = new Date();
+    let currentTime = currentDate.getTime();
+    let difference = countdownTime - currentTime;
+    let seconds = Math.floor((difference % minute) / second);
+    let minutes = Math.floor((difference % hour) / minute);
+    let hours = Math.floor((difference % day) / hour);
+    let days = Math.floor(difference / day);
     //To do calculate years, take into account leap years.
-    var html = "Countdown to 18th birthday: ";
+    let html = "Countdown to 18th birthday: ";
     html += days + " days ";
     html += hours + " hours ";
     html += minutes + " minutes ";
@@ -55,14 +55,14 @@ function getCountdownHTML(countdownTime) {
     return html;
 }
 function getAgeHTML(waifu) {
-    var html = "";
+    let html = "";
     if (hasYear(waifu)) {
-        var currentDate = new Date();
-        var age = currentDate.getFullYear() - waifu["year"];
+        let currentDate = new Date();
+        let age = currentDate.getFullYear() - waifu["year"];
         //take into count the month
         if (hasMonth(waifu)) {
-            var month = waifu["month"];
-            var currentMonth = currentDate.getMonth() + 1;
+            let month = waifu["month"];
+            let currentMonth = currentDate.getMonth() + 1;
             if ((currentMonth < month) || (
             //take into count the day
             currentMonth === month &&
@@ -78,7 +78,7 @@ function getAgeHTML(waifu) {
         if (legalAge <= age) {
             html += "Looks legal to me.<br>\n";
             //stop timer
-            if (countdown !== undefined) {
+            if (countdown !== -1) {
                 clearInterval(countdown);
                 //congrats, your waifu is now of legal age
             }
@@ -89,10 +89,12 @@ function getAgeHTML(waifu) {
             html += legalAge - age;
             html += " more years.<br>\n";
             //We need to start the timer before we can display it
-            if (countdown === undefined) {
-                countdown = setInterval(function () {
-                    var countdownElement = document.getElementById("dynamic-data");
-                    countdownElement.innerHTML = getDynamicDataHTML(waifu);
+            if (countdown === -1) {
+                countdown = window.setInterval(function () {
+                    let countdownElement = document.getElementById("dynamic-data");
+                    if (countdownElement !== null) {
+                        countdownElement.innerHTML = getDynamicDataHTML(waifu);
+                    }
                 }, 1 * second);
             }
             html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
@@ -106,12 +108,11 @@ function getAgeHTML(waifu) {
     }
     return html;
 }
-function getBirthDate(waifu, yearsOffset) {
-    if (yearsOffset === void 0) { yearsOffset = 0; }
+function getBirthDate(waifu, yearsOffset = 0) {
     if (!hasYear(waifu)) {
         return new Date();
     }
-    var year = waifu["year"] + yearsOffset;
+    let year = waifu["year"] + yearsOffset;
     if (!hasMonth(waifu)) {
         return new Date(year);
     }
@@ -126,21 +127,26 @@ function getDynamicDataHTML(waifu) {
     return getAgeHTML(waifu);
 }
 function displayWaifuStats(name) {
-    var input = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
-    var output = document.getElementById("output");
+    let input = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
+    let foundOutput = document.getElementById("output");
+    let output;
+    if (foundOutput === null)
+        return;
+    else
+        output = foundOutput;
     output.innerHTML = "";
     //add search to history
-    var parms = new URLSearchParams(window.location.search);
-    var search = parms.get("q");
-    var historyState = { "q": input };
-    var query = "?q=" + input;
+    let parms = new URLSearchParams(window.location.search);
+    let search = parms.get("q");
+    let historyState = { "q": input };
+    let query = "?q=" + input;
     if (search === null || search !== input) {
         history.pushState(historyState, "", query);
     }
     else {
         history.replaceState(historyState, "", query);
     }
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
     request.responseType = "json";
     request.onerror = function (event) {
@@ -148,7 +154,7 @@ function displayWaifuStats(name) {
         output.innerHTML = "Something went wrong. Look at console for more info";
     };
     request.onload = function () {
-        var newHTML = "";
+        let newHTML = "";
         switch (this.status) {
             case 200: //OK
                 break;
@@ -162,29 +168,29 @@ function displayWaifuStats(name) {
                         "please add her" +
                         "</a>.";
             default:
-                var error = "Error " + this.status.toString();
+                let error = "Error " + this.status.toString();
                 output.innerHTML = error + "<br>\n" + newHTML;
                 document.title = error + " - " + siteName;
                 return;
         }
         //clear values before starting
-        if (countdown !== undefined) {
+        if (countdown !== -1) {
             clearInterval(countdown);
-            countdown = undefined;
+            countdown = -1;
         }
-        var data = this.response;
-        var englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
+        let data = this.response;
+        let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
         newHTML += "<h1>";
         newHTML += englishName;
         newHTML += "</h1>\n";
         document.title = englishName + " - " + siteName;
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
-            newHTML += "<img src=\"";
+            newHTML += "<img class=\"waifu-image\" src=\"";
             newHTML += data["image"];
             newHTML += "\" alt=\"";
             newHTML += englishName;
-            newHTML += "\"><br>\n";
+            newHTML += "\">\n";
         }
         //display birthday
         if (hasMonth(data)) {
@@ -206,14 +212,14 @@ function displayWaifuStats(name) {
         newHTML += "</div>\n";
         //list notes and sources
         function createListHtml(jsonKey, displayName) {
-            var html = "";
+            let html = "";
             if (!data.hasOwnProperty(jsonKey) || data[jsonKey] === null || data[jsonKey].length === 0) {
                 return html;
             }
             html += "<br>";
             html += displayName;
             html += ":<br>\n<ul>\n";
-            var values = data[jsonKey];
+            let values = data[jsonKey];
             values.forEach(function (value) {
                 html += "<li>";
                 html += value;
@@ -233,8 +239,8 @@ function onWaifuSearch() {
 }
 //read query string values
 window.onload = function () {
-    var parms = new URLSearchParams(window.location.search);
-    var search = parms.get("q");
+    let parms = new URLSearchParams(window.location.search);
+    let search = parms.get("q");
     if (search !== null) {
         displayWaifuStats(search);
     }
