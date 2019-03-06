@@ -180,11 +180,11 @@ function displayWaifuStats(name) {
         document.title = englishName + " - " + siteName;
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
-            newHTML += "<img src=\"";
+            newHTML += "<img class=\"waifu-image\" src=\"";
             newHTML += data["image"];
             newHTML += "\" alt=\"";
             newHTML += englishName;
-            newHTML += "\"><br>\n";
+            newHTML += "\">\n";
         }
         //display birthday
         if (hasMonth(data)) {

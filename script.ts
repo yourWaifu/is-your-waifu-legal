@@ -200,11 +200,11 @@ function displayWaifuStats(name : string) : void {
 
 		//display waifu image
 		if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
-			newHTML += "<img src=\"";
+			newHTML += "<img class=\"waifu-image\" src=\"";
 			newHTML += data["image"];
 			newHTML += "\" alt=\""
 			newHTML += englishName;
-			newHTML += "\"><br>\n";
+			newHTML += "\">\n";
 		}
 
 		//display birthday

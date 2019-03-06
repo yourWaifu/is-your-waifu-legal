@@ -99,3 +99,8 @@ a:hover {
 	color: white;
 	font-size: 1em;
 }
+
+.waifu-image {
+	/*this is just here to stop the "can't have empty class warning"*/
+	font-size: 1em;
+}
