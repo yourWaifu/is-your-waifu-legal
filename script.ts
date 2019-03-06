@@ -1,6 +1,7 @@
 //Warning make sure you are editing the ts file and not the js file
 
 var legalAge = 18;
+let siteName = "Is Your Waifu Legal?";
 
 //units
 let millisecond : number = 1;
@@ -148,8 +149,12 @@ function displayWaifuStats(name : string) : void {
 	//add search to history
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string = parms.get("q");
+	let historyState : any = {"q":input};
+	let query : string = "?q=" + input;
 	if (search === null || search !== input) {
-		history.pushState({"q":input}, "", "?q=" + input);
+		history.pushState(historyState, "", query);
+	} else {
+		history.replaceState(historyState, "", query)
 	}
 
 	let request : XMLHttpRequest = new XMLHttpRequest();
@@ -160,22 +165,23 @@ function displayWaifuStats(name : string) : void {
 		output.innerHTML = "Something went wrong. Look at console for more info";
 	};
 	request.onload = function() {
+		let newHTML : string = "";
 		switch(this.status) {
 		case 200: //OK
 			break;
 		case 404:
-			output.innerHTML =
+			newHTML +=
 				"Could not find this person. Sorry.<br>\n" +
 				"Maybe you spelled her name wrong.<br>\n" +
 				"Maybe you forgot to enter her full name.<br>\n" +
 				"If you know her age, " +
 				"<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
 					"please add her" +
-				"</a>."
-			return;
+				"</a>.";
 		default:
-			output.innerHTML =
-				"Error " + this.status.toString()
+			let error : string = "Error " + this.status.toString()
+			output.innerHTML = error + "<br>\n" + newHTML;
+			document.title = error + " - " + siteName;
 			return;
 		}
 
@@ -187,11 +193,10 @@ function displayWaifuStats(name : string) : void {
 
 		let data : JSON = this.response;
 		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
-		let newHTML : string = "";
 		newHTML += "<h1>";
 		newHTML += englishName;
 		newHTML += "</h1>\n";
-		document.title = englishName + " - Is Your Waifu Legal?";
+		document.title = englishName + " - " + siteName;
 
 		//display waifu image
 		if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {

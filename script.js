@@ -1,5 +1,6 @@
 //Warning make sure you are editing the ts file and not the js file
 var legalAge = 18;
+var siteName = "Is Your Waifu Legal?";
 //units
 var millisecond = 1;
 var second = 1000 * millisecond;
@@ -131,8 +132,13 @@ function displayWaifuStats(name) {
     //add search to history
     var parms = new URLSearchParams(window.location.search);
     var search = parms.get("q");
+    var historyState = { "q": input };
+    var query = "?q=" + input;
     if (search === null || search !== input) {
-        history.pushState({ "q": input }, "", "?q=" + input);
+        history.pushState(historyState, "", query);
+    }
+    else {
+        history.replaceState(historyState, "", query);
     }
     var request = new XMLHttpRequest();
     request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
@@ -142,11 +148,12 @@ function displayWaifuStats(name) {
         output.innerHTML = "Something went wrong. Look at console for more info";
     };
     request.onload = function () {
+        var newHTML = "";
         switch (this.status) {
             case 200: //OK
                 break;
             case 404:
-                output.innerHTML =
+                newHTML +=
                     "Could not find this person. Sorry.<br>\n" +
                         "Maybe you spelled her name wrong.<br>\n" +
                         "Maybe you forgot to enter her full name.<br>\n" +
@@ -154,10 +161,10 @@ function displayWaifuStats(name) {
                         "<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
                         "please add her" +
                         "</a>.";
-                return;
             default:
-                output.innerHTML =
-                    "Error " + this.status.toString();
+                var error = "Error " + this.status.toString();
+                output.innerHTML = error + "<br>\n" + newHTML;
+                document.title = error + " - " + siteName;
                 return;
         }
         //clear values before starting
@@ -167,11 +174,10 @@ function displayWaifuStats(name) {
         }
         var data = this.response;
         var englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
-        var newHTML = "";
         newHTML += "<h1>";
         newHTML += englishName;
         newHTML += "</h1>\n";
-        document.title = englishName + " - Is Your Waifu Legal?";
+        document.title = englishName + " - " + siteName;
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
             newHTML += "<img src=\"";
