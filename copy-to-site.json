@@ -1,0 +1,9 @@
+{
+	"copy-directories": [
+		"waifus"
+	],
+	"copy-files-in-directories": [
+		"site",
+		"tsc-output"
+	]
+}

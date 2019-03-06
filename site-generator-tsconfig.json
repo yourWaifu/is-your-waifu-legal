@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig",
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"target": "es6",
+		"lib": ["es5", "es6", "dom"],
+		"module": "commonjs"
+	},
+	"files": [
+		"site-generator.ts"
+	]
+}

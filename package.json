@@ -1,0 +1,24 @@
+{
+  "name": "is-your-waifu-legal",
+  "version": "1.0.0",
+  "description": "It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some people (Not us), have issues with lolis in NSFW stuff, which is why this tool exist. This tool's purpose is to make it easy to calculate the **current** age of a waifu.",
+  "main": "site-generator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourWaifu/is-your-waifu-legal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yourWaifu/is-your-waifu-legal/issues"
+  },
+  "homepage": "https://github.com/yourWaifu/is-your-waifu-legal#readme",
+  "devDependencies": {
+    "@types/node": "^11.10.4",
+    "typescript": "^3.3.3333"
+  }
+}

@@ -10,7 +10,7 @@ let minute : number = 60 * second;
 let hour : number = 60 * minute;
 let day : number = 24 * hour;
 
-var countdown : number = undefined;
+var countdown : number = -1;
 
 let months : Array<string> = [
 	"January",
@@ -28,7 +28,7 @@ let months : Array<string> = [
 ];
 
 function hasValue(data: JSON, key: string) : boolean {
-	return data.hasOwnProperty(key) && data[key] !== null;
+	return data.hasOwnProperty(key) && <any>data[key] !== null;
 }
 
 function hasYear(waifu : JSON) : boolean {
@@ -46,7 +46,7 @@ function hasDay(waifu : JSON) : boolean {
 function getCountdownHTML(countdownTime : number) : string {
 	//sanity check
 	if (countdownTime === undefined) {
-		return;
+		return "";
 	}
 
 	let currentDate : Date = new Date();
@@ -95,7 +95,7 @@ function getAgeHTML(waifu : JSON) : string {
 		if (legalAge <= age) {
 			html += "Looks legal to me.<br>\n"
 			//stop timer
-			if (countdown !== undefined) {
+			if (countdown !== -1) {
 				clearInterval(countdown);
 				//congrats, your waifu is now of legal age
 			}
@@ -106,10 +106,12 @@ function getAgeHTML(waifu : JSON) : string {
 			html += " more years.<br>\n"
 
 			//We need to start the timer before we can display it
-			if (countdown === undefined) {
-				countdown = setInterval(function() {
-					let countdownElement : HTMLElement = document.getElementById("dynamic-data");
-					countdownElement.innerHTML = getDynamicDataHTML(waifu);
+			if (countdown === -1) {
+				countdown = window.setInterval(function() {
+					let countdownElement : HTMLElement | null = document.getElementById("dynamic-data");
+					if (countdownElement !== null) {
+						countdownElement.innerHTML = getDynamicDataHTML(waifu);
+					}
 				}, 1 * second);
 			}
 
@@ -143,12 +145,15 @@ function getDynamicDataHTML(waifu : JSON) : string {
 
 function displayWaifuStats(name : string) : void {
 	let input : string = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
-	let output : HTMLElement = document.getElementById("output");
+	let foundOutput : HTMLElement | null = document.getElementById("output");
+	let output : HTMLElement;
+	if (foundOutput === null) return;
+	else output = foundOutput;
 	output.innerHTML = "";
 
 	//add search to history
-	let parms : URLSearchParams = new URLSearchParams(window.location.search);
-	let search : string = parms.get("q");
+	let parms : URLSearchParams | null = new URLSearchParams(window.location.search);
+	let search : string | null = parms.get("q");
 	let historyState : any = {"q":input};
 	let query : string = "?q=" + input;
 	if (search === null || search !== input) {
@@ -186,9 +191,9 @@ function displayWaifuStats(name : string) : void {
 		}
 
 		//clear values before starting
-		if (countdown !== undefined) {
+		if (countdown !== -1) {
 			clearInterval(countdown);
-			countdown = undefined;
+			countdown = -1;
 		}
 
 		let data : JSON = this.response;
@@ -261,7 +266,7 @@ function onWaifuSearch() : void {
 //read query string values
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
-	let search : string = parms.get("q");
+	let search : string | null = parms.get("q");
 	if (search !== null) {
 		displayWaifuStats(search);
 	}

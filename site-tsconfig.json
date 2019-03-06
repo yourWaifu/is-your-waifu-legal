@@ -1,0 +1,15 @@
+{
+	"extends": "./basetsconfig",
+	"compilerOptions": {
+		"outDir": "tsc-output",
+		"target": "es6"
+	},
+	"files": [
+		"script.ts",
+		"404.ts"
+	],
+	"exclude": [
+		"**/*.spec.ts",
+		"node_modules/"
+	]
+}
