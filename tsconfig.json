@@ -1,6 +1,3 @@
 {
-	"files": [
-		"script.ts",
-		"404.ts"
-	]
+	"extends": "./basetsconfig",
 }
