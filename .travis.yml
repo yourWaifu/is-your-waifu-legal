@@ -1,0 +1,20 @@
+lang: node_js
+node_js:
+- '0.10'
+before_install:
+- npm install -g typescript
+- npm i @types/node
+script:
+- bash generate-site.sh
+deploy:
+- provider: pages
+  local-dir: output-site
+  target-branch: gh-pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep-history: true
+  on:
+    branch: static-site-generator
+env:
+  global:
+    secure: JEN5ANgY83qhtJ0fI6T1Xn7ZFdCODasJJQ/KppuaCQw66jh4qFeg4ltJqRXPvQ3j2jJUCyINvf6lEx6Bo+YGeUMomprycpKXqr6buqFK4SyEct6WFpxeKuZ0W/QuyrNEwC3H2viHcKj666UqIXxRH6GO9t84caHd0NJJFkd1B3hoXl9vglIw4u3JgY722KODVYxJFO1GF2yV0v5uXiLqQonfriUjN0FlzmCDRUUW32JqLMv+7eRrjwpV6Pk9TGXdltMnk1xPlToAvJgT/YJSVhDBIA2vB8kYNdTHmoR1rUlLOuzLmvhFdfZSG66pS6x+1NkP96BH/aOnM2pyE9FaCSs+mcsZjWuBIwSjkrfAHBLJ2Vhlkwyfw+x1/J1QJX0ALVsYtnVBqENfxoYAvSz+WLRMo1lwgwSXT9Uqza/717Y0ABSiI07HcgxetRJY6IZ6Qn7ymLtJLDdGBZrEAtMXnDLi/oFzP2tbHd6rTY+Znj54tsH4I6886pe9WwPA/KhNCjBJOUianY5jY8kMnJOvl/nXt6gVitr60ZV17fud662gQwypar2m8vv0MsQlfL4Io38c7DgJX/c47bDddRh57BsTT2wyYXy+bo1T4fqVzPVaj5T1UJc0st6ruMpcv7sybwYc6rWvc1RiGblGq02nxjpYEks0SFDCcirFu5ba4Z8=
