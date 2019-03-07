@@ -1,7 +1,7 @@
 {
-	"extends": "./basetsconfig",
+	"extends": "./base-tsconfig",
 	"compilerOptions": {
-		"outDir": "tsc-output",
+		"outDir": "tsc-output/site",
 		"target": "es6"
 	},
 	"files": [

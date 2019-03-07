@@ -4,6 +4,6 @@
 	],
 	"copy-files-in-directories": [
 		"site",
-		"tsc-output"
+		"tsc-output/site"
 	]
 }

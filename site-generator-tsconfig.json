@@ -2,9 +2,16 @@
 	"extends": "./tsconfig",
 	"compilerOptions": {
 		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictPropertyInitialization": true,
 		"target": "es6",
 		"lib": ["es5", "es6", "dom"],
-		"module": "commonjs"
+		"module": "commonjs",
+		"outDir": "tsc-output"
 	},
 	"files": [
 		"site-generator.ts"

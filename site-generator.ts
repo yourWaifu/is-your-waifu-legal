@@ -58,7 +58,7 @@ function copyFilesInFolderSync(source: string, target: string) : void {
 class InputType {
 	copyDirectories: Array<string>;
 	copyFilesInDirectories: Array<string>;
-	deserialize(input: any) : InputType {
+	constructor(input: any) {
 		if (input.hasOwnProperty("copy-directories"))
 			this.copyDirectories = <Array<string>>input["copy-directories"];
 		else
@@ -69,8 +69,6 @@ class InputType {
 			this.copyFilesInDirectories = <Array<string>>input["copy-files-in-directories"];
 		else
 			this.copyFilesInDirectories = [];
-
-		return this;
 	}
 }
 
@@ -78,7 +76,7 @@ if (!fs.existsSync(outputDirName)) {
 	fs.mkdirSync(outputDirName);
 }
 
-let input : InputType = new InputType().deserialize(require("./" + inputFilename));
+let input : InputType = new InputType(require("../" + inputFilename));
 
 input.copyDirectories.forEach(function(directory: string) {
 	copyFolderRecursiveSync(directory, outputDirName);
