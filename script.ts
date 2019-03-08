@@ -270,13 +270,10 @@ function onWaifuSearch() : void {
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string | null = parms.get("q");
-	search = search !== null ? search : "";
-	displayWaifuStats(search);
+	if (search !== null)
+		displayWaifuStats(search);
 }
 
 window.onpopstate = function(event) : void {
-	if (!hasValue(event.state, "q")) {
-		return;
-	}
-	displayWaifuStats(event.state["q"]);
+	displayWaifuStats(hasValue(event.state, "q") ? event.state["q"] : "");
 };
