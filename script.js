@@ -135,6 +135,8 @@ function displayWaifuStats(name) {
     else
         output = foundOutput;
     output.innerHTML = "";
+    if (input === "")
+        return;
     //add search to history
     let parms = new URLSearchParams(window.location.search);
     let search = parms.get("q");
@@ -190,7 +192,7 @@ function displayWaifuStats(name) {
             newHTML += data["image"];
             newHTML += "\" alt=\"";
             newHTML += englishName;
-            newHTML += "\">\n";
+            newHTML += "\"><br>\n";
         }
         //display birthday
         if (hasMonth(data)) {
@@ -241,9 +243,8 @@ function onWaifuSearch() {
 window.onload = function () {
     let parms = new URLSearchParams(window.location.search);
     let search = parms.get("q");
-    if (search !== null) {
-        displayWaifuStats(search);
-    }
+    search = search !== null ? search : "";
+    displayWaifuStats(search);
 };
 window.onpopstate = function (event) {
     if (!hasValue(event.state, "q")) {

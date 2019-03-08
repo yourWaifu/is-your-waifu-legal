@@ -5,6 +5,12 @@
 	"year" : 2017,
 	"month" : 2,
 	"day-of-month" : 1,
+	"age-group-by-appearance" : "teenager",
+	"age-range-by-appearance" : [13, 18],
+	"definitely-legal": false,
+	"age-in-show": 17,
+	"finally-legal-in-show" : "the movie",
 	"image" : "",
+	"notes": [""],
 	"sources" : ["https://yourWaifu.dev"]
 }
