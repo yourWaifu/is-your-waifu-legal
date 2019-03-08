@@ -243,12 +243,9 @@ function onWaifuSearch() {
 window.onload = function () {
     let parms = new URLSearchParams(window.location.search);
     let search = parms.get("q");
-    search = search !== null ? search : "";
-    displayWaifuStats(search);
+    if (search !== null)
+        displayWaifuStats(search);
 };
 window.onpopstate = function (event) {
-    if (!hasValue(event.state, "q")) {
-        return;
-    }
-    displayWaifuStats(event.state["q"]);
+    displayWaifuStats(hasValue(event.state, "q") ? event.state["q"] : "");
 };
