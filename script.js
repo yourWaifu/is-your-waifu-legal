@@ -23,7 +23,12 @@ let months = [
     "December"
 ];
 function hasValue(data, key) {
-    return data.hasOwnProperty(key) && data[key] !== null;
+    try {
+        return data.hasOwnProperty(key) && data[key] !== null;
+    }
+    catch (error) {
+        return false;
+    }
 }
 function hasYear(waifu) {
     return hasValue(waifu, "year");
