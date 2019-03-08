@@ -7,13 +7,13 @@ It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some
 1. Make sure you create a github account.
 2. [Install github for desktop.](https://desktop.github.com/) (You may use the command line if you like)
 3. [Click here to fork](https://github.com/yourWaifu/is-this-waifu-legal/fork)
-5. In your fork, go to waifus folder.
-6. Click the Create new file button.
-7. Name it the english name.json
-8. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/Futaba%20Sakura.json)
-9. Save and commit changes.
-10. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
-11. Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
+4. In your fork, go to waifus folder.
+5. Click the Create new file button.
+6. Name it the english name.json
+7. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/Futaba%20Sakura.json)
+8. Save and commit changes.
+9. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
+10. Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
 
 # FAQ
 
@@ -32,3 +32,7 @@ It's the same answer to this question, Is it illegal to fap to underage fictiona
 ## Is this a joke?
 
 Yea
+
+## Why not just look it up on Google?
+
+Many wiki sites have info on this stuff, but you have to read through a bunch of other info to figure out the current age, the age in the show, and what season and ep they've become of legal age. This site is one place with all the age data and information about anime girl ages.
