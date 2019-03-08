@@ -28,7 +28,11 @@ let months : Array<string> = [
 ];
 
 function hasValue(data: JSON, key: string) : boolean {
-	return data.hasOwnProperty(key) && <any>data[key] !== null;
+	try {
+		return data.hasOwnProperty(key) && <any>data[key] !== null;
+	} catch (error) {
+		return false;
+	}
 }
 
 function hasYear(waifu : JSON) : boolean {
