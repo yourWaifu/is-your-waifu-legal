@@ -147,8 +147,12 @@ function getDynamicDataHTML(waifu : JSON) : string {
 	return getAgeHTML(waifu);
 }
 
+function sanitizeInput(input:string) : string {
+	return input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
 function displayWaifuStats(name : string) : void {
-	let input : string = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
+	let input : string = sanitizeInput(name);
 	let foundOutput : HTMLElement | null = document.getElementById("output");
 	let output : HTMLElement;
 	if (foundOutput === null) return;
@@ -170,7 +174,7 @@ function displayWaifuStats(name : string) : void {
 	}
 
 	let request : XMLHttpRequest = new XMLHttpRequest();
-	request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
+	request.open("GET", "/waifus/" + input.toLowerCase() + ".json");
 	request.responseType = "json";
 	request.onerror = function(event) {
 		console.log(event);
@@ -268,6 +272,90 @@ function displayWaifuStats(name : string) : void {
 
 function onWaifuSearch() : void {
 	displayWaifuStats((<HTMLInputElement>document.getElementById("waifu-search")).value);
+}
+
+//Search prediction
+
+let searchTree : JSON | undefined = undefined;
+
+function predictWaifu(input:string) : Array<string> {
+	if (
+		searchTree === undefined ||
+		searchTree["root"] === undefined ||
+		searchTree["root"]["children"] === undefined ||
+		searchTree["allKeys"] === undefined
+	)
+		return [];
+	let position : JSON = searchTree["root"];
+	for (let i : number = 0; i < input.length; ++i) {
+		let index: number = input.charCodeAt(i) - ' '.charCodeAt(0);
+		let branches : JSON = position["children"];
+		if (branches[index] === undefined || branches[index] === null)
+			return [];
+		position = branches[index];
+	}
+	if (position["value"] === undefined)
+		return [];
+	let topPrediction : number = position["value"];
+	let topPredictions : Array<string> = [];
+	for (let i : number = 0; i < 5; ++i) {
+		let prediction: string | undefined = searchTree["allKeys"][topPrediction + i];
+		if (prediction === undefined)
+			break;
+		topPredictions.push(prediction);
+	}
+	return topPredictions;
+}
+
+function displayWaifuPredictions() {
+	let element : any = document.getElementById("waifu-predictions");
+	if (element === null)
+		return;
+	let output : HTMLElement = element;
+	let newHTML : string = "";
+	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
+	input = sanitizeInput(input);
+	let predictions : Array<string> = predictWaifu(input)
+	for (let i : number = 0; i < predictions.length; ++i) {
+		let prediction : string = predictions[i];
+		newHTML += "<a href=\"?q=";
+		newHTML += prediction;
+		newHTML += "\">"
+		newHTML += prediction;
+		newHTML += "</a><br>\n"
+	}
+	output.innerHTML = newHTML;
+}
+
+function onWaifuPrediction() {
+	if (searchTree === undefined) {
+		let request : XMLHttpRequest = new XMLHttpRequest();
+		request.open("GET", "search-tree.json");
+		request.responseType = "json";
+		request.onerror = function () {
+		}
+		request.onload = function() {
+			searchTree = this.response;
+			displayWaifuPredictions();
+		}
+		request.send();
+	} else {
+		displayWaifuPredictions();
+	}
+}
+
+function showWaifuPredictionsMenus() {
+	let menu : any = document.getElementById("waifu-predictions");
+	menu.style.display = "unset";
+}
+
+function hideWaifuPredictionsMenus() {
+	let menu : any = document.getElementById("waifu-predictions");
+	//in case the user clicks on the prediction menu
+	//delay hiding the menu
+	window.setTimeout(() => {
+		menu.style.display = "none";
+	}, 100);
 }
 
 //read query string values
