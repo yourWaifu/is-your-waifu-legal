@@ -147,8 +147,12 @@ function getDynamicDataHTML(waifu : JSON) : string {
 	return getAgeHTML(waifu);
 }
 
+function sanitizeInput(input:string) : string {
+	return input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+}
+
 function displayWaifuStats(name : string) : void {
-	let input : string = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); //sanitize input for the url
+	let input : string = sanitizeInput(name);
 	let foundOutput : HTMLElement | null = document.getElementById("output");
 	let output : HTMLElement;
 	if (foundOutput === null) return;
@@ -170,7 +174,7 @@ function displayWaifuStats(name : string) : void {
 	}
 
 	let request : XMLHttpRequest = new XMLHttpRequest();
-	request.open("GET", "https://yourwaifu.dev/is-your-waifu-legal/waifus/" + input.toLowerCase() + ".json");
+	request.open("GET", "/waifus/" + input.toLowerCase() + ".json");
 	request.responseType = "json";
 	request.onerror = function(event) {
 		console.log(event);
@@ -270,6 +274,109 @@ function onWaifuSearch() : void {
 	displayWaifuStats((<HTMLInputElement>document.getElementById("waifu-search")).value);
 }
 
+//Search prediction
+
+let searchTree : JSON | undefined = undefined;
+
+function predictWaifu(input:string) : Array<string> {
+	if (
+		searchTree === undefined ||
+		searchTree["root"] === undefined ||
+		searchTree["root"]["children"] === undefined ||
+		searchTree["allKeys"] === undefined
+	)
+		return [];
+	let position : JSON = searchTree["root"];
+	for (let i : number = 0; i < input.length; ++i) {
+		let index: number = input.charCodeAt(i) - ' '.charCodeAt(0);
+		let branches : JSON = position["children"];
+		if (branches[index] === undefined || branches[index] === null)
+			return [];
+		position = branches[index];
+	}
+	if (position["value"] === undefined)
+		return [];
+	let topPrediction : number = position["value"];
+	let topPredictions : Array<string> = [];
+	for (let i : number = 0; i < 5; ++i) {
+		let prediction: string | undefined = searchTree["allKeys"][topPrediction + i];
+		if (prediction === undefined)
+			break;
+		topPredictions.push(prediction);
+	}
+	return topPredictions;
+}
+
+function displayWaifuPredictions() {
+	let element : any = document.getElementById("waifu-predictions");
+	if (element === null)
+		return;
+	let output : HTMLElement = element;
+	let newHTML : string = "";
+	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
+	input = sanitizeInput(input);
+	
+	if (input === "") {
+		output.innerHTML = 
+			"Search predictions will show up here<br>\n";
+		return;
+	}
+
+	let predictions : Array<string> = predictWaifu(input);
+	for (let i : number = 0; i < predictions.length; ++i) {
+		let prediction : string = predictions[i];
+		newHTML += "<a href=\"?q=";
+		newHTML += prediction;
+		newHTML += "\">"
+		newHTML += prediction;
+		newHTML += "</a><br>\n"
+	}
+	
+	if (newHTML === "") {
+		newHTML += 
+			"Sorry, no results.<br>\n" +
+			"Maybe you misspelled her name.<br>\n" +
+			"She might not be in the database. " +
+			"<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
+				"If so, please add her." +
+			"</a><br>\n";
+	}
+	output.innerHTML = newHTML;
+}
+
+function onWaifuPrediction() {
+	if (searchTree === undefined) {
+		let request : XMLHttpRequest = new XMLHttpRequest();
+		request.open("GET", "search-tree.json");
+		request.responseType = "json";
+		request.onerror = function () {
+		}
+		request.onload = function() {
+			searchTree = this.response;
+			displayWaifuPredictions();
+		}
+		request.send();
+	} else {
+		displayWaifuPredictions();
+	}
+}
+
+function onWaifuPredictionAutoComplete() {
+	if (searchTree === undefined)
+		return;
+	let inputElement = <HTMLInputElement>document.getElementById("waifu-search");
+	let input : string = inputElement.value;
+	input = sanitizeInput(input);
+	let predictions : Array<string> = predictWaifu(input);
+	if (predictions.length === 0)
+		return;
+	if (inputElement.value === predictions[0] && 1 < predictions.length) {
+		inputElement.value = predictions[1];
+	} else {
+		inputElement.value = predictions[0];
+	}
+} 
+
 //read query string values
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
@@ -281,3 +388,34 @@ window.onload = function () : void {
 window.onpopstate = function(event) : void {
 	displayWaifuStats(hasValue(event.state, "q") ? event.state["q"] : "");
 };
+
+// Some UI stuff
+
+function onClickWaifuPrediction(elementID:string) {
+	//using on foucs and on blur causes clicking on
+	//predictions to close instead of going to the predicted
+	//link
+	//Doing this fixes this issue
+	let showElements : Set<string> = new Set();
+	showElements.add("waifu-search");
+	showElements.add("waifu-predictions");
+
+	let show : boolean = showElements.has(elementID);
+
+	let menu : any = document.getElementById("waifu-predictions");
+	menu.style.display = show ? "unset" : "none";
+}
+
+let uiOnClickCallbacks : Array<Function> = new Array<Function>();
+uiOnClickCallbacks.push(onClickWaifuPrediction);
+
+window.onclick = function(mouse: MouseEvent) {
+	let element : Element | null = document.elementFromPoint(mouse.clientX, mouse.clientY);
+	if (element === null)
+		return;
+	let clickedElement : Element = element;
+	console.log(clickedElement.id);
+	uiOnClickCallbacks.forEach(function (f:Function){
+		f(clickedElement.id);
+	});
+}
