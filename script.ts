@@ -344,20 +344,6 @@ function onWaifuPrediction() {
 	}
 }
 
-function showWaifuPredictionsMenus() {
-	let menu : any = document.getElementById("waifu-predictions");
-	menu.style.display = "unset";
-}
-
-function hideWaifuPredictionsMenus() {
-	let menu : any = document.getElementById("waifu-predictions");
-	//in case the user clicks on the prediction menu
-	//delay hiding the menu
-	window.setTimeout(() => {
-		menu.style.display = "none";
-	}, 100);
-}
-
 //read query string values
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
@@ -369,3 +355,34 @@ window.onload = function () : void {
 window.onpopstate = function(event) : void {
 	displayWaifuStats(hasValue(event.state, "q") ? event.state["q"] : "");
 };
+
+// Some UI stuff
+
+function onClickWaifuPrediction(elementID:string) {
+	//using on foucs and on blur causes clicking on
+	//predictions to close instead of going to the predicted
+	//link
+	//Doing this fixes this issue
+	let showElements : Set<string> = new Set();
+	showElements.add("waifu-search");
+	showElements.add("waifu-predictions");
+
+	let show : boolean = showElements.has(elementID);
+
+	let menu : any = document.getElementById("waifu-predictions");
+	menu.style.display = show ? "unset" : "none";
+}
+
+let uiOnClickCallbacks : Array<Function> = new Array<Function>();
+uiOnClickCallbacks.push(onClickWaifuPrediction);
+
+window.onclick = function(mouse: MouseEvent) {
+	let element : Element | null = document.elementFromPoint(mouse.clientX, mouse.clientY);
+	if (element === null)
+		return;
+	let clickedElement : Element = element;
+	console.log(clickedElement.id);
+	uiOnClickCallbacks.forEach(function (f:Function){
+		f(clickedElement.id);
+	});
+}
