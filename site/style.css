@@ -109,4 +109,8 @@ a:hover {
 	display: none;
 	position: absolute;
 	top: 2.5em;
+	left: -.5em;
+	background: #181818;
+	padding: 0 .5em .5em .5em;
+	box-shadow: -2px 2px 10px black;
 }

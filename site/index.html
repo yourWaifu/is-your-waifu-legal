@@ -19,10 +19,16 @@
 						placeholder="Enter Waifu's Full Name Here"
 						name="search"
 						class="search-box"
-						onkeydown="if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();"
+						onfocus="onWaifuPrediction();"
+						onkeydown="
+							if(event.keyCode == '\r'.charCodeAt(0)) onWaifuSearch();
+							else if (event.keyCode == 40) onWaifuPredictionAutoComplete(); //arrow down
+						"
 						onkeyup="onWaifuPrediction();"
 					><br>
-					<div id="waifu-predictions" class="dropdown-content"></div>
+					<div id="waifu-predictions" class="dropdown-content">
+						Search predictions not available<br>
+					</div>
 				</div>
 				<!--Note: \r is the enter key on the keyboard-->
 			</div>

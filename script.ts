@@ -315,7 +315,14 @@ function displayWaifuPredictions() {
 	let newHTML : string = "";
 	let input : string = (<HTMLInputElement>document.getElementById("waifu-search")).value;
 	input = sanitizeInput(input);
-	let predictions : Array<string> = predictWaifu(input)
+	
+	if (input === "") {
+		output.innerHTML = 
+			"Search predictions will show up here<br>\n";
+		return;
+	}
+
+	let predictions : Array<string> = predictWaifu(input);
 	for (let i : number = 0; i < predictions.length; ++i) {
 		let prediction : string = predictions[i];
 		newHTML += "<a href=\"?q=";
@@ -323,6 +330,16 @@ function displayWaifuPredictions() {
 		newHTML += "\">"
 		newHTML += prediction;
 		newHTML += "</a><br>\n"
+	}
+	
+	if (newHTML === "") {
+		newHTML += 
+			"Sorry, no results.<br>\n" +
+			"Maybe you misspelled her name.<br>\n" +
+			"She might not be in the database. " +
+			"<a href=\"https://github.com/yourWaifu/is-your-waifu-legal#How-to-add-a-waifu-to-the-list\">" +
+				"If so, please add her." +
+			"</a><br>\n";
 	}
 	output.innerHTML = newHTML;
 }
@@ -343,6 +360,22 @@ function onWaifuPrediction() {
 		displayWaifuPredictions();
 	}
 }
+
+function onWaifuPredictionAutoComplete() {
+	if (searchTree === undefined)
+		return;
+	let inputElement = <HTMLInputElement>document.getElementById("waifu-search");
+	let input : string = inputElement.value;
+	input = sanitizeInput(input);
+	let predictions : Array<string> = predictWaifu(input);
+	if (predictions.length === 0)
+		return;
+	if (inputElement.value === predictions[0] && 1 < predictions.length) {
+		inputElement.value = predictions[1];
+	} else {
+		inputElement.value = predictions[0];
+	}
+} 
 
 //read query string values
 window.onload = function () : void {
