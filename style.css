@@ -104,3 +104,13 @@ a:hover {
 	/*this is just here to stop the "can't have empty class warning"*/
 	font-size: 1em;
 }
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	top: 2.5em;
+	left: -.5em;
+	background: #181818;
+	padding: 0 .5em .5em .5em;
+	box-shadow: -2px 2px 10px black;
+}
