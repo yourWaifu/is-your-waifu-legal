@@ -6,5 +6,8 @@
 	"year" : 1998,
 	"month" : 2,
 	"day-of-month" : 2,
+	"age-group-by-appearance" : "teenager",
+	"age-in-show": 19,
+	"finally-legal-in-show" : "Fairies Story 3",
 	"sources" : ["https://new-game.fandom.com/wiki/Aoba_Suzukaze"]
 }

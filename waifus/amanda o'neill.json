@@ -6,5 +6,7 @@
 	"year" : null,
 	"month" : 3,
 	"day-of-month" : 17,
+	"age-group-by-appearance": "teenager",
+	"age-in-show": 16,
 	"sources" : ["https://little-witch-academia.fandom.com/wiki/Amanda_O%27Neill"]
 }
