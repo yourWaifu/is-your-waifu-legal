@@ -85,6 +85,16 @@ input.copyFilesInDirectories.forEach(function(file:string){
 	copyFilesInFolderSync(file, outputDirName);
 });
 
+//generate main page
+let indexPage : string = fs.readFileSync("../README.md");
+let indexHeader : string =
+	"---\n" +
+	"layout: default\n" +
+	"---\n";
+//replace first line with indexHeader
+indexPage = indexHeader + indexPage.substring(indexPage.indexOf('\n') + 1);
+fs.writeFile(path.join(outputDirName, "index.md"), indexPage, ()=>{});
+
 //generate trie tree
 let numOfLettersInAlphabet = 127;
 
