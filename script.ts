@@ -151,6 +151,10 @@ function sanitizeInput(input:string) : string {
 	return input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
+function getCurrentURL() : string {
+	return location.protocol + '//' + location.host + location.pathname;
+}
+
 function displayWaifuStats(name : string) : void {
 	let input : string = sanitizeInput(name);
 	let foundOutput : HTMLElement | null = document.getElementById("output");
@@ -159,8 +163,10 @@ function displayWaifuStats(name : string) : void {
 	else output = foundOutput;
 	output.innerHTML = "";
 
-	if (input === "")
+	if (input === "") {
+		
 		return;
+	}
 
 	//add search to history
 	let parms : URLSearchParams | null = new URLSearchParams(window.location.search);
@@ -174,8 +180,7 @@ function displayWaifuStats(name : string) : void {
 	}
 
 	let request : XMLHttpRequest = new XMLHttpRequest();
-	let currentURL = location.protocol + '//' + location.host + location.pathname;
-	request.open("GET", currentURL + "/waifus/" + input.toLowerCase() + ".json");
+	request.open("GET", getCurrentURL() + "/waifus/" + input.toLowerCase() + ".json");
 	request.responseType = "json";
 	request.onerror = function(event) {
 		console.log(event);
@@ -378,16 +383,41 @@ function onWaifuPredictionAutoComplete() {
 	}
 } 
 
+//read me
+function displayReadMe() : void {
+	let request : XMLHttpRequest = new XMLHttpRequest();
+	request.open("GET", getCurrentURL() + "/README.html");
+	request.responseType = "document";
+	request.onload = function() {
+		switch(this.status) {
+			case 200: break; //OK
+			default: return;
+		}
+		let data : Document | null = this.responseXML;
+		if (data === null) return;
+		let output : HTMLElement | null = document.getElementById("output");
+		if (output === null) return;
+		output.innerHTML = "";
+		output.appendChild(data.documentElement);
+	};
+	request.send();
+}
+
 //read query string values
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string | null = parms.get("q");
 	if (search !== null)
 		displayWaifuStats(search);
+	else
+		displayReadMe();
 }
 
 window.onpopstate = function(event) : void {
-	displayWaifuStats(hasValue(event.state, "q") ? event.state["q"] : "");
+	if (hasValue(event.state, "q"))
+		displayWaifuStats(event.state["q"]);
+	else
+		displayReadMe();
 };
 
 // Some UI stuff
