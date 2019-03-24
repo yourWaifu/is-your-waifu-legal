@@ -74,6 +74,7 @@ body {
 	background-color: #212121;
 	font-family: 'Open Sans', sans-serif;
 	color: white;
+	text-rendering: optimizeLegibility;
 }
 
 a {
