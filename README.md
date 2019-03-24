@@ -7,15 +7,14 @@ It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some
 # How to add a Waifu to the list?
 
 1. Make sure you create a github account.
-2. [Install github for desktop.](https://desktop.github.com/) (You may use the command line if you like)
-3. [Click here to fork](https://github.com/yourWaifu/is-this-waifu-legal/fork)
-4. In your fork, go to waifus folder.
-5. Click the Create new file button.
-6. Name it the english name.json
-7. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/futaba%20sakura.json)
-8. Save and commit changes.
-9. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
-10. Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
+2. [Click here to fork](https://github.com/yourWaifu/is-this-waifu-legal/fork)
+3. In your fork, go to waifus folder.
+4. Click the Create new file button.
+5. Name it the english name.json
+6. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/futaba%20sakura.json)
+7. Save and commit changes.
+8. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
+9.  Wait for more instructions if needed, if not needed, it'll be accepted and the waifu will be added to the list.
 
 # FAQ
 
