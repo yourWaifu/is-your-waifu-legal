@@ -308,8 +308,9 @@ function predictWaifu(input:string) : Array<string> {
 	)
 		return [];
 	let position : JSON = searchTree["root"];
+	let filteredInput = input.toLowerCase();
 	for (let i : number = 0; i < input.length; ++i) {
-		let index: number = input.charCodeAt(i) - ' '.charCodeAt(0);
+		let index: number = filteredInput.charCodeAt(i) - ' '.charCodeAt(0);
 		let branches : JSON = position["children"];
 		if (branches[index] === undefined || branches[index] === null)
 			return [];
@@ -458,7 +459,6 @@ window.onclick = function(mouse: MouseEvent) {
 	if (element === null)
 		return;
 	let clickedElement : Element = element;
-	console.log(clickedElement.id);
 	uiOnClickCallbacks.forEach(function (f:Function){
 		f(clickedElement.id);
 	});
