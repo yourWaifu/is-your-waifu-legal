@@ -271,8 +271,9 @@ function predictWaifu(input) {
         searchTree["allKeys"] === undefined)
         return [];
     let position = searchTree["root"];
+    let filteredInput = input.toLowerCase();
     for (let i = 0; i < input.length; ++i) {
-        let index = input.charCodeAt(i) - ' '.charCodeAt(0);
+        let index = filteredInput.charCodeAt(i) - ' '.charCodeAt(0);
         let branches = position["children"];
         if (branches[index] === undefined || branches[index] === null)
             return [];
@@ -410,7 +411,6 @@ window.onclick = function (mouse) {
     if (element === null)
         return;
     let clickedElement = element;
-    console.log(clickedElement.id);
     uiOnClickCallbacks.forEach(function (f) {
         f(clickedElement.id);
     });
