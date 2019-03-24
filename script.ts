@@ -426,15 +426,11 @@ window.onload = function () : void {
 	//other places in the codebase. Maybe try fixing that.
 	if (search !== null)
 		displayWaifuStats(search);
-	else
-		displayReadMe();
 }
 
 window.onpopstate = function(event) : void {
 	if (hasValue(event.state, "q"))
 		displayWaifuStats(event.state["q"]);
-	else
-		displayReadMe();
 };
 
 // Some UI stuff
