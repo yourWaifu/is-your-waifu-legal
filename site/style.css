@@ -105,16 +105,14 @@ a:hover {
 }
 
 .waifu-image {
-	max-width: 100%;
-	max-height: 100%;
 	margin: 0 auto;
 	display: block;
+	max-width: 100%;
 }
 
 .waifu-body {
 	display: flex;
 	flex-direction: row;
-	flex-wrap: nowrap; /*changes to wrap on small screens*/
 }
 
 .dropdown-content {
@@ -146,16 +144,27 @@ a:hover {
 	flex: 0 0 37em;
 }
 
-@media screen and (max-width: 45em) {
+@media screen and (max-width: 55.5em) {
 	.waifu-body {
 		flex-wrap: wrap;
 	}
 
 	.waifu-image-parent {
 		max-height: 50vh;
+		width: 100vw;
 	}
 
 	.waifu-image {
 		max-height: 100%;
+	}
+}
+
+@media screen and (min-width: 55.5em) {
+	.waifu-body {
+		flex-wrap: nowrap;
+	}
+
+	.waifu-image {
+		max-width: 100%;
 	}
 }
