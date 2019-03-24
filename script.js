@@ -194,32 +194,41 @@ function displayWaifuStats(name) {
         }
         let data = this.response;
         let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
-        newHTML += "<h1>";
+        newHTML += "<h1 class=\"waifu-name\">";
         newHTML += englishName;
         newHTML += "</h1>\n";
         document.title = englishName + " - " + siteName;
+        newHTML += "<div class=\"waifu-body\">\n";
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
+            newHTML += "<div class=\"waifu-image-parent\">\n";
             newHTML += "<img class=\"waifu-image\" src=\"";
             newHTML += data["image"];
             newHTML += "\" alt=\"";
             newHTML += englishName;
-            newHTML += "\"><br>\n";
+            newHTML += "\">\n";
+            newHTML += "</div>\n";
         }
+        newHTML += "<div class=\"waifu-stats\">\n";
         //display birthday
+        let hasAnyBirthDayInfo = false;
         if (hasMonth(data)) {
             newHTML += months[Number(data["month"]) - 1] + " ";
+            hasAnyBirthDayInfo = true;
         }
         if (hasDay(data)) {
             newHTML += data["day-of-month"].toString();
+            hasAnyBirthDayInfo = true;
         }
         if (hasYear(data)) {
-            if (hasMonth(data) || hasDay(data)) {
+            if (hasAnyBirthDayInfo) {
                 newHTML += ", ";
             }
             newHTML += data["year"].toString();
+            hasAnyBirthDayInfo = true;
         }
-        newHTML += "<br>\n";
+        if (hasAnyBirthDayInfo)
+            newHTML += "<br>\n";
         // Calculate data
         newHTML += "<div id=\"dynamic-data\">\n";
         newHTML += getDynamicDataHTML(data);
@@ -244,6 +253,8 @@ function displayWaifuStats(name) {
         }
         newHTML += createListHtml("notes", "Notes");
         newHTML += createListHtml("sources", "Sources");
+        newHTML += "</div>\n";
+        newHTML += "</div>\n";
         output.innerHTML = newHTML;
     };
     request.send();
@@ -370,6 +381,8 @@ function displayReadMe() {
 window.onload = function () {
     let parms = new URLSearchParams(window.location.search);
     let search = parms.get("q");
+    //TODO seems that this code might be copied in
+    //other places in the codebase. Maybe try fixing that.
     if (search !== null)
         displayWaifuStats(search);
     else
