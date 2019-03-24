@@ -385,14 +385,10 @@ window.onload = function () {
     //other places in the codebase. Maybe try fixing that.
     if (search !== null)
         displayWaifuStats(search);
-    else
-        displayReadMe();
 };
 window.onpopstate = function (event) {
     if (hasValue(event.state, "q"))
         displayWaifuStats(event.state["q"]);
-    else
-        displayReadMe();
 };
 // Some UI stuff
 function onClickWaifuPrediction(elementID) {
