@@ -34,7 +34,7 @@
 	background-color: transparent;
 	color: white;
 	border-style: none;
-	border-width: 0;	
+	border-width: 0;
 }
 
 .right button:hover {
@@ -103,6 +103,10 @@ ul {
 	border-right: transparent;
 	color: white;
 	font-size: 1em;
+}
+
+.waifu-name {
+	overflow: auto;
 }
 
 .waifu-image {
