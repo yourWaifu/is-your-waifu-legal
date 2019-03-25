@@ -273,7 +273,11 @@ function displayWaifuStats(name : string) : void {
 			let values : Array<string> = data[jsonKey];
 			values.forEach(function(value : string) {
 				html += "<li>"
-				html += value;
+				//https://stackoverflow.com/a/1500501
+				let urlRegex : RegExp = /(https?:\/\/[^\s]+)/g;
+				html += value.replace(urlRegex, function(url) {
+					return '<a href="' + url + '">' + url + '</a>';
+				});
 				html += "</li>\n";
 			});
 			html += "</ul>\n";
