@@ -101,14 +101,11 @@ a:hover {
 	font-size: 1em;
 }
 
-.waifu-image-parent {
-	flex: 0 1 100%;
-}
-
 .waifu-image {
 	margin: 0 auto;
 	display: block;
 	max-width: 100%;
+	flex: 0 1 100%;
 }
 
 .waifu-body {
@@ -146,17 +143,34 @@ a:hover {
 }
 
 @media screen and (max-width: 55.5em) {
+	.header-container {
+		flex-direction: column;
+	}
+
+	/*
+	This doesn't look good on mobile,
+	disable "right" for now as a temp fix
+	*/
+	.right {
+		display: none;
+	}
+
+	.dropdown-content {
+		top: 1.5em;
+	}
+
 	.waifu-body {
 		flex-wrap: wrap;
 	}
 
-	.waifu-image-parent {
+	.waifu-image {
 		max-height: 50vh;
 		width: 100vw;
+		object-fit: contain;
 	}
 
-	.waifu-image {
-		max-height: 100%;
+	.waifu-stats {
+		flex-shrink: 1;
 	}
 }
 
