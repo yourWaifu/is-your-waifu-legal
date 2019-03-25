@@ -423,19 +423,26 @@ function displayReadMe() : void {
 	request.send();
 }
 
+function displaySiteContent(q: string | null | undefined) : void {
+	if (q === undefined || q === null)
+		displayReadMe();
+	else
+		displayWaifuStats(q);
+}
+
 //read query string values
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string | null = parms.get("q");
 	//TODO seems that this code might be copied in
 	//other places in the codebase. Maybe try fixing that.
-	if (search !== null)
-		displayWaifuStats(search);
+	displaySiteContent(search);
 }
 
 window.onpopstate = function(event) : void {
-	if (hasValue(event.state, "q"))
-		displayWaifuStats(event.state["q"]);
+	let search : string | null =
+		hasValue(event.state, "q") ? event.state["q"] : null;
+	displaySiteContent(search);
 };
 
 // Some UI stuff
