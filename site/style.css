@@ -171,12 +171,14 @@ a:hover {
 
 	.waifu-stats {
 		flex-shrink: 1;
+		width: 100vw;
 	}
 }
 
 @media screen and (min-width: 55.5em) {
 	.waifu-body {
 		flex-wrap: nowrap;
+		justify-content: space-between;
 	}
 
 	.waifu-image {
