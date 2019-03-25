@@ -181,6 +181,10 @@ a:hover {
 		justify-content: space-between;
 	}
 
+	.waifu-image-parent {
+		flex: 1 1 auto;
+	}
+
 	.waifu-image {
 		max-width: 100%;
 	}
