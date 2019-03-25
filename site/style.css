@@ -85,6 +85,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+ul {
+	overflow: auto;
+}
+
 .title {
 	font-size: 2em;
 }
@@ -172,10 +176,6 @@ a:hover {
 	.waifu-stats {
 		flex-shrink: 1;
 		width: 100vw;
-	}
-
-	ul {
-		overflow: auto;
 	}
 }
 
