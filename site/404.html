@@ -3,9 +3,20 @@ permalink: /404.html
 ---
 <html>
 	<head>
-		<script scr="404.js"></script>
+		<script>
+			let currentURL = window.location.pathname;
+			//sanitize input for the final url
+			currentURL = currentURL.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+			//get last /
+			let lastSlashIndex = currentURL.lastIndexOf("/") + 1
+			window.location.replace(
+				location.protocol +
+				'//' +
+				location.host +
+				currentURL.substr(0, lastSlashIndex) +
+				"?q=" +
+				currentURL.substr(lastSlashIndex)
+			);
+		</script>
 	</head>
-	<body>
-		<script>f();</script>
-	</body>
 </html>

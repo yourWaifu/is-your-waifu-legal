@@ -5,8 +5,7 @@
 		"target": "es6"
 	},
 	"files": [
-		"script.ts",
-		"404.ts"
+		"script.ts"
 	],
 	"exclude": [
 		"**/*.spec.ts",
