@@ -434,8 +434,6 @@ function displaySiteContent(q: string | null | undefined) : void {
 window.onload = function () : void {
 	let parms : URLSearchParams = new URLSearchParams(window.location.search);
 	let search : string | null = parms.get("q");
-	//TODO seems that this code might be copied in
-	//other places in the codebase. Maybe try fixing that.
 	displaySiteContent(search);
 }
 
