@@ -30,6 +30,14 @@
 	margin-right: 8;
 }
 
+.left a, .right a {
+	color: white;
+}
+
+.left a:hover, .right a:hover {
+	color: darkgray;
+}
+
 .right button {
 	background-color: transparent;
 	color: white;
@@ -51,14 +59,6 @@
 
 .github {
 	text-align: right;
-}
-
-.github a {
-	color: white;
-}
-
-.github a:hover {
-	color: darkgray;
 }
 
 .github i {
@@ -150,9 +150,22 @@ ul {
 	flex: 0 0 37em;
 }
 
+.front-screen {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 @media screen and (max-width: 55.5em) {
 	.header-container {
 		flex-direction: column;
+	}
+
+	.left {
+		margin-left: 0;
+		text-align: center;
 	}
 
 	/*
@@ -171,6 +184,12 @@ ul {
 		flex-wrap: wrap;
 	}
 
+	.waifu-name {
+		width: calc(37em/2);
+		margin-left: auto;
+		margin-right: auto;
+	}
+
 	.waifu-image {
 		max-height: 50vh;
 		width: 100vw;
@@ -180,6 +199,11 @@ ul {
 	.waifu-stats {
 		flex-shrink: 1;
 		width: 100vw;
+		margin: 0 auto;
+	}
+
+	.front-screen {
+		height: calc(100% - 6em - 16px);
 	}
 }
 
@@ -195,5 +219,9 @@ ul {
 
 	.waifu-image {
 		max-width: 100%;
+	}
+
+	.front-screen {
+		height: calc(100% - 4em - 16px);
 	}
 }
