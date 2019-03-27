@@ -419,6 +419,16 @@ function displayReadMe() : void {
 		if (output === null) return;
 		output.innerHTML = "";
 		output.appendChild(data.documentElement);
+		
+		//Detect firefox mobile
+		let frontScreen : HTMLElement | null = document.getElementById("front-screen");
+		if (frontScreen === null) return;
+		let frontScreenHeight = frontScreen.clientHeight;
+		let frontScreenText : HTMLElement | null = document.getElementById("front-screen-text");
+		if (frontScreenText === null) return;
+		let frontScreenTextHeight : number = frontScreenText.clientHeight;
+		if (frontScreenHeight <= frontScreenTextHeight)
+			frontScreen.className = "front-screen-firefox";
 	};
 	request.send();
 }
