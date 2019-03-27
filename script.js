@@ -392,8 +392,6 @@ function displaySiteContent(q) {
 window.onload = function () {
     let parms = new URLSearchParams(window.location.search);
     let search = parms.get("q");
-    //TODO seems that this code might be copied in
-    //other places in the codebase. Maybe try fixing that.
     displaySiteContent(search);
 };
 window.onpopstate = function (event) {
