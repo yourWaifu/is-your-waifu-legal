@@ -5,7 +5,7 @@
 }
 
 .header-container {
-	margin: 0 auto;
+	margin: .5em;
 	display: flex;
 }
 
@@ -14,12 +14,10 @@
 	list-style: none;
 	width: auto;
 	padding-left: 0em;
-	margin: 8 0 8 0;
 }
 
 .left {
 	flex: 0 0 auto; /*Don't change size*/
-	margin-left: 8;
 }
 
 .right {
@@ -27,7 +25,6 @@
 	width: auto;
 	justify-content: flex-end;
 	flex: 0 0 auto;
-	margin-right: 8;
 }
 
 .left a, .right a {
@@ -52,8 +49,8 @@
 
 .middle {
 	flex: 1 0 auto; /*Grow, but don't shrink*/
-	margin-left: 8;
-	margin-right: 8;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
 	position: relative; /*For some reason the search box needs this*/
 }
 
@@ -121,10 +118,15 @@ ul {
 	flex-direction: row;
 }
 
+.dropdown-content-container {
+	position: relative;
+	height: 0;
+}
+
 .dropdown-content {
 	display: none;
 	position: absolute;
-	top: 2.5em;
+	top: 1.7em;
 	left: -.5em;
 	background: #181818;
 	padding: 0 .5em .5em .5em;
@@ -168,6 +170,11 @@ ul {
 		text-align: center;
 	}
 
+	.middle {
+		margin: 0;
+		margin-top: 0.5em;
+	}
+
 	/*
 	This doesn't look good on mobile,
 	disable "right" for now as a temp fix
@@ -177,7 +184,7 @@ ul {
 	}
 
 	.dropdown-content {
-		top: 1.5em;
+		top: 0em;
 	}
 
 	.waifu-body {
@@ -204,7 +211,7 @@ ul {
 	}
 
 	.front-screen {
-		height: calc(100% - 6em - 16px);
+		height: calc(100vh - 7.25em);
 	}
 }
 
@@ -223,6 +230,6 @@ ul {
 	}
 
 	.front-screen {
-		height: calc(100% - 4em - 16px);
+		height: calc(100vh - 5.5em);
 	}
 }
