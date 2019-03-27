@@ -185,7 +185,8 @@ ul {
 	}
 
 	.waifu-name {
-		width: calc(37em/2);
+		max-width: calc(37em/2);
+		width: 100%;
 		margin-left: auto;
 		margin-right: auto;
 	}
