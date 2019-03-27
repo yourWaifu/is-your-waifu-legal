@@ -1,5 +1,5 @@
 .header {
-	position: static;
+	position: relative; /*For some reason you need this for the shadow to show up*/
 	background-color: #181818;
 	box-shadow: 0 0 12px black;
 }
