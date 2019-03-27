@@ -379,6 +379,17 @@ function displayReadMe() {
             return;
         output.innerHTML = "";
         output.appendChild(data.documentElement);
+        //Detect firefox mobile
+        let frontScreen = document.getElementById("front-screen");
+        if (frontScreen === null)
+            return;
+        let frontScreenHeight = frontScreen.clientHeight;
+        let frontScreenText = document.getElementById("front-screen-text");
+        if (frontScreenText === null)
+            return;
+        let frontScreenTextHeight = frontScreenText.clientHeight;
+        if (frontScreenHeight <= frontScreenTextHeight)
+            frontScreen.className = "front-screen-firefox";
     };
     request.send();
 }
