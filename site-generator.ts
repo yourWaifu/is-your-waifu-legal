@@ -86,7 +86,7 @@ input.copyFilesInDirectories.forEach(function(file:string){
 });
 
 //generate main page
-let indexPage : string = fs.readFileSync("README.md").toString();
+let indexPage : string = fs.readFileSync("README.md", "utf8");
 let indexHeader : string =
 	"---\n" +
 	"layout: readme\n" +
