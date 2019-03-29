@@ -96,21 +96,20 @@ indexPage = indexHeader + indexPage.substring(indexPage.indexOf('\n') + 1);
 fs.writeFile(path.join(outputDirName, "README.md"), indexPage, ()=>{});
 
 //generate trie tree
-let numOfLettersInAlphabet = 127;
-
 namespace SearchTree {
 	class Branch {
-		children: Array<Branch> | undefined;
+		children: any | undefined;
 		//if value is not null, then we are at the end
 		value: undefined | number;
 		constructor() {
 			this.children = undefined;
 		}
-		createChild(index: number) : Branch {
+		createChild(key: string) : Branch {
 			if (this.children === undefined)
-				this.children = new Array<Branch>(numOfLettersInAlphabet);
-			this.children[index] = new Branch();
-			return this.children[index];
+				this.children = {};
+			this.children[key] = new Branch();
+			let l = this.children[key];
+			return l !== undefined ? l : new Branch();
 		}
 		setValue(value:number) : void {
 			this.value = value;
@@ -129,24 +128,18 @@ namespace SearchTree {
 			let value:number = this.allKeys.push(key) - 1;
 			let position : Branch = this.root;
 			for (let i:number = 0; i < key.length; ++i) {
-				//for now, keys must be in the alphabet. We might want to change this later
-				if (key.charCodeAt(i) < ' '.charCodeAt(0) ||
-					(
-						'A'.charCodeAt(0) <= key.charCodeAt(i) &&
-						key.charCodeAt(i) <= 'Z'.charCodeAt(0)
-					) ||
-					(1 << 7) <= key.charCodeAt(i)
-				)
-					throw "Error: key " + key + " has char outside of a to z.";
-				
-				let index: number = key.charCodeAt(i) - ' '.charCodeAt(0);
-				//basically position = position.children[index];
+				let letter: string = key[i];
+				//basically position = position.children[letter];
 				if (position === undefined)
 					throw "position is undefined";
-				if (position.children === undefined || position.children[index] === undefined) {
-					position = position.createChild(index);
+				if (position.children === undefined) {
+					position = position.createChild(letter);
 				} else {
-					position = position.children[index];
+					let next: Branch | undefined = position.children[letter];
+					if (next === undefined)
+						position = position.createChild(letter);
+					else
+						position = next;
 				}
 				if (position.value === undefined)
 					position.setValue(value);
@@ -161,4 +154,9 @@ waifuFiles.sort().forEach(function(file:string) {
 	searchTree.insert(file);
 });
 
-fs.writeFile(path.join(outputDirName, "search-tree.json"), JSON.stringify(searchTree), ()=>{});
+let searchTreeJson: string = JSON.stringify(searchTree);
+//replace repeated variables with shorten names
+searchTreeJson = searchTreeJson.replace(/"children":/g, "\"c\":");
+searchTreeJson = searchTreeJson.replace(/"value":/g, "\"v\":");
+
+fs.writeFile(path.join(outputDirName, "search-tree.json"), searchTreeJson, ()=>{});

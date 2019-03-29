@@ -307,22 +307,22 @@ function predictWaifu(input:string) : Array<string> {
 	if (
 		searchTree === undefined ||
 		searchTree["root"] === undefined ||
-		searchTree["root"]["children"] === undefined ||
+		searchTree["root"][/*children*/"c"] === undefined ||
 		searchTree["allKeys"] === undefined
 	)
 		return [];
 	let position : JSON = searchTree["root"];
 	let filteredInput = input.toLowerCase();
 	for (let i : number = 0; i < input.length; ++i) {
-		let index: number = filteredInput.charCodeAt(i) - ' '.charCodeAt(0);
-		let branches : JSON = position["children"];
-		if (branches[index] === undefined || branches[index] === null)
+		let letter: string = filteredInput[i];
+		let branches : JSON = position[/*children*/"c"];
+		if (branches[letter] === undefined || branches[letter] === null)
 			return [];
-		position = branches[index];
+		position = branches[letter];
 	}
-	if (position["value"] === undefined)
+	if (position[/*value*/"v"] === undefined)
 		return [];
-	let topPrediction : number = position["value"];
+	let topPrediction : number = position[/*value*/"v"];
 	let topPredictions : Array<string> = [];
 	for (let i : number = 0; i < 5; ++i) {
 		let prediction: string | undefined = searchTree["allKeys"][topPrediction + i];
