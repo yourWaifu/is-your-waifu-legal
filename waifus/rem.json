@@ -6,5 +6,6 @@
 	"year" : null,
 	"month" : null,
 	"day-of-month" : null,
+	"age-in-show": 17,
 	"sources" : ["https://rezero.fandom.com/wiki/Rem"]
 }

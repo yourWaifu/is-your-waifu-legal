@@ -2,6 +2,7 @@
 	"type" : 0,
 	"japanese-name" : "",
 	"english-name" : "test dummy",
+	"aliases" : ["dummy"],
 	"year" : 2017,
 	"month" : 2,
 	"day-of-month" : 1,
@@ -10,6 +11,7 @@
 	"definitely-legal": false,
 	"age-in-show": 17,
 	"finally-legal-in-show" : "the movie",
+	"is-a-trap": false,
 	"image" : "",
 	"notes": [""],
 	"sources" : ["https://yourWaifu.dev"]

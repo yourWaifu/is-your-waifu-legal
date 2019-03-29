@@ -8,5 +8,6 @@
 	"month" : 10,
 	"day-of-month" : 13,
 	"definitely-legal" : true,
+	"notes": ["She's a professor."],
 	"sources" : ["https://little-witch-academia.fandom.com/wiki/Croix_Meridies"]
 }

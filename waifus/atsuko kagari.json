@@ -7,5 +7,7 @@
 	"year" : null,
 	"month" : 5,
 	"day-of-month" : 25,
+	"age-group-by-appearance" : "teenager",
+	"age-in-show": 16,
 	"sources" : ["https://little-witch-academia.fandom.com/wiki/Atsuko_Kagari"]
 }

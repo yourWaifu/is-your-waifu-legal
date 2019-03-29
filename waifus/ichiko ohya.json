@@ -8,5 +8,6 @@
 	"month" : null,
 	"day-of-month" : null,
 	"definitely-legal" : true,
+	"age-range-by-appearance" : [20, 29],
 	"sources" : ["https://megamitensei.fandom.com/wiki/Ichiko_Ohya"]
 }
