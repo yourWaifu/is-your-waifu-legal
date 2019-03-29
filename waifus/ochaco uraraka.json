@@ -6,6 +6,7 @@
 	"year" : null,
 	"month" : null,
 	"day-of-month" : null,
+	"age-in-show": 15,
 	"notes" : ["The anime looks like it takes in the future, so she's not legal because she hasn't been born yet."],
 	"sources" : [
 		"https://bokunoheroacademia.fandom.com/wiki/Ochaco_Uraraka",

@@ -10,6 +10,7 @@
 	"definitely-legal": false,
 	"age-in-show": 17,
 	"finally-legal-in-show" : "the movie",
+	"is-a-trap": false,
 	"image" : "",
 	"notes": [""],
 	"sources" : ["https://yourWaifu.dev"]
