@@ -125,7 +125,7 @@ namespace SearchTree {
 			this.root = new Branch();
 		}
 		insert(sourceKey: string) : void {
-			let key: string = sourceKey.substr(0, sourceKey.indexOf('.'));
+			let key: string = sourceKey.substr(0, sourceKey.lastIndexOf('.'));
 			let value:number = this.allKeys.push(key) - 1;
 			let position : Branch = this.root;
 			for (let i:number = 0; i < key.length; ++i) {

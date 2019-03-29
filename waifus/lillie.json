@@ -1,0 +1,10 @@
+{
+	"type" : 0,
+	"english-name" : "Lillie",
+	"image" : "https://cdn.bulbagarden.net/upload/e/e5/LillieUltraPrism151.jpg",
+	"japanese-name" : "リーリエ",
+	"age-range-by-appearance" : [10, 13],
+	"age-group-by-appearance" : "pre-teen",
+	"notes": ["You need to be at least 10 to be a pokemon trainer"],
+	"sources" : ["https://bulbapedia.bulbagarden.net/wiki/Lillie"]
+}
