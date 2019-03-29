@@ -6,5 +6,8 @@
 	"year" : null,
 	"month" : null,
 	"day-of-month" : null,
+	"definitely-legal": true,
+	"age-group-by-appearance" : "teenager",
+	"notes": ["Aqua has lived in the Fantasy World for hundreds of years. However, according to Aqua, time passes slower in the afterlife. So her age on earth would be much higher then her age in the fantasy world."],
 	"sources" : ["https://konosuba.fandom.com/wiki/Aqua"]
 }

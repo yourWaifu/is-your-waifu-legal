@@ -5,6 +5,8 @@
 	"year" : 1993,
 	"month" : 2,
 	"day-of-month" : 14,
+	"age-group-by-appearance" : "teenager",
+	"age-in-show": 17,
 	"image" : "https://vignette.wikia.nocookie.net/luckystar/images/0/05/KogamiAkira002.jpg",
 	"sources" : ["https://luckystar.fandom.com/wiki/Akira_Kogami"]
 }

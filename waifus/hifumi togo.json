@@ -7,5 +7,7 @@
 	"year" : null,
 	"month" : null,
 	"day-of-month" : null,
+	"age-group-by-appearance" : "teenager",
+	"notes": ["She's a high school student. Likely not of legal age."],
 	"sources" : ["https://megamitensei.fandom.com/wiki/Hifumi_Togo"]
 }
