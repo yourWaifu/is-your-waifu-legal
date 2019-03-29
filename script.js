@@ -271,21 +271,21 @@ let searchTree = undefined;
 function predictWaifu(input) {
     if (searchTree === undefined ||
         searchTree["root"] === undefined ||
-        searchTree["root"]["children"] === undefined ||
+        searchTree["root"][ /*children*/"c"] === undefined ||
         searchTree["allKeys"] === undefined)
         return [];
     let position = searchTree["root"];
     let filteredInput = input.toLowerCase();
     for (let i = 0; i < input.length; ++i) {
-        let index = filteredInput.charCodeAt(i) - ' '.charCodeAt(0);
-        let branches = position["children"];
-        if (branches[index] === undefined || branches[index] === null)
+        let letter = filteredInput[i];
+        let branches = position[ /*children*/"c"];
+        if (branches[letter] === undefined || branches[letter] === null)
             return [];
-        position = branches[index];
+        position = branches[letter];
     }
-    if (position["value"] === undefined)
+    if (position[ /*value*/"v"] === undefined)
         return [];
-    let topPrediction = position["value"];
+    let topPrediction = position[ /*value*/"v"];
     let topPredictions = [];
     for (let i = 0; i < 5; ++i) {
         let prediction = searchTree["allKeys"][topPrediction + i];
