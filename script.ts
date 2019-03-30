@@ -121,8 +121,6 @@ function getAgeHTML(waifu : JSON) : string {
 
 			html += getCountdownHTML(getBirthDate(waifu, legalAge).getTime());
 		}
-	} else if (hasValue(waifu, "definitely-legal") && waifu["definitely-legal"] === true) {
-		html += "Definitely Legal<br>\n"
 	} else {
 		html += "Year of birth is unknown. Sorry.<br>\n"
 	}
@@ -236,7 +234,11 @@ function displayWaifuStats(name : string) : void {
 
 		newHTML += "<div class=\"waifu-stats\">\n";
 
+		if (hasValue(data, "definitely-legal") && data["definitely-legal"] === true)
+			newHTML += "Definitely Legal<br><br>\n"
+
 		//display birthday
+		newHTML += "Based on birthday:\n"
 		let hasAnyBirthDayInfo : boolean = false;
 		if (hasMonth(data)) {
 			newHTML += months[Number(data["month"]) - 1] + " ";
@@ -260,6 +262,51 @@ function displayWaifuStats(name : string) : void {
 		newHTML += "<div id=\"dynamic-data\">\n"
 		newHTML += getDynamicDataHTML(data);
 		newHTML += "</div>\n"
+
+		//based on appearance
+		let appearanceDataHTML = "";
+		let appearanceAnswer = "";
+		if (hasValue(data, "age-group-by-appearance")) {
+			appearanceDataHTML += "looks like a(n) ";
+			appearanceDataHTML += data["age-group-by-appearance"];
+			appearanceDataHTML += "\n";
+			switch (data["age-group-by-appearance"]) {
+				case "child": case "teen":
+					appearanceAnswer = "Doesn't look legal";
+				default:
+					appearanceAnswer = "looks legal";
+			}
+
+		}
+		if (hasValue(data, "age-range-by-appearance") && data["age-range-by-appearance"][0] !== undefined) {
+			if (appearanceDataHTML !== "")
+				appearanceDataHTML += "<br>\n"
+			let startAge = data["age-range-by-appearance"][0];
+			appearanceDataHTML += "looks about ";
+			appearanceDataHTML += startAge;
+			if (data["age-range-by-appearance"][1] !== undefined) {
+				appearanceDataHTML += " to ";
+				appearanceDataHTML += data["age-range-by-appearance"][1];
+			}
+			appearanceDataHTML += " years old\n"
+			if (appearanceAnswer !== "") {
+				//to do, looks like there's repeated code here
+				appearanceAnswer =
+					startAge < legalAge ?
+						"Doesn't look legal"
+					: startAge <= legalAge + 1 ?
+						"Looks barely legal"
+					:
+						"Looks legal";
+			}
+		}
+		if(appearanceDataHTML !== "") {
+			newHTML += "<br>\nBased on appearance:\n<br>\n";
+			newHTML += appearanceDataHTML;
+			newHTML += "<br>\n";
+			newHTML += appearanceAnswer;
+			newHTML += "<br>\n";
+		}
 
 		//list notes and sources
 		function createListHtml(jsonKey:string, displayName:string) {
