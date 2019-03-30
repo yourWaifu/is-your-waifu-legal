@@ -41,6 +41,7 @@
 	border-style: none;
 	border-width: 0;
 	font-size: 1em;
+	padding: 0 .5em 0 0;
 }
 
 .right button:hover {
