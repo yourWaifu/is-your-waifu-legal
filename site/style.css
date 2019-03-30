@@ -40,6 +40,7 @@
 	color: white;
 	border-style: none;
 	border-width: 0;
+	font-size: 1em;
 }
 
 .right button:hover {
