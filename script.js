@@ -459,6 +459,12 @@ function displayReadMe() {
             frontScreen.className = "front-screen-firefox";
     };
     request.send();
+    //auto set focus on search bar
+    let element = document.getElementById("waifu-search");
+    if (element === null)
+        return;
+    let searchBar = element;
+    searchBar.focus();
 }
 function displaySiteContent(q) {
     if (q === undefined || q === null)
