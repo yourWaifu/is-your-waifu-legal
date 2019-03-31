@@ -503,6 +503,13 @@ function displayReadMe() : void {
 			frontScreen.className = "front-screen-firefox";
 	};
 	request.send();
+	
+	//auto set focus on search bar
+	let element : HTMLElement | null = document.getElementById("waifu-search");
+	if (element === null)
+		return;
+	let searchBar : HTMLElement = element;
+	searchBar.focus();
 }
 
 function displaySiteContent(q: string | null | undefined) : void {
