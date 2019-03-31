@@ -242,8 +242,9 @@ function displayWaifuStats(name) {
             appearanceDataHTML += "\n";
             switch (data["age-group-by-appearance"]) {
                 case "child":
-                case "teen":
                     appearanceAnswer = "Doesn't look legal";
+                case "teenager":
+                    appearanceAnswer = "Looks like they might too young to be legal. Maybe?";
                 default:
                     appearanceAnswer = "looks legal";
             }
@@ -275,6 +276,28 @@ function displayWaifuStats(name) {
             newHTML += appearanceDataHTML;
             newHTML += "<br>\n";
             newHTML += appearanceAnswer;
+            newHTML += "<br>\n";
+        }
+        //in the story
+        let storyAgeHTML = "";
+        if (hasValue(data, "age-in-show")) {
+            let storyAge = data["age-in-show"];
+            storyAgeHTML += "Age in story: ";
+            storyAgeHTML += storyAge.toString();
+            storyAgeHTML += "\n<br>\n";
+            storyAgeHTML += storyAge < legalAge ? "Not legal" : "Legal";
+            storyAgeHTML += "\n";
+        }
+        if (hasValue(data, "finally-legal-in-show")) {
+            if (storyAgeHTML !== "")
+                storyAgeHTML += "<br>\n";
+            storyAgeHTML += "When they became legal: ";
+            storyAgeHTML += data["finally-legal-in-show"];
+            storyAgeHTML += "\n";
+        }
+        if (storyAgeHTML !== "") {
+            newHTML += "<br>\nBased on story:\n<br>\n";
+            newHTML += storyAgeHTML;
             newHTML += "<br>\n";
         }
         //list notes and sources
