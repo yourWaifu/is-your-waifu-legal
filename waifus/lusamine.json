@@ -1,0 +1,10 @@
+{
+	"type" : 0,
+	"english-name" : "Lusamine",
+	"image" : "https://cdn.bulbagarden.net/upload/4/4a/Sun_Moon_Lusamine.png",
+	"japanese-name" : "ルザミーネ",
+	"definitely-legal": true,
+	"age-in-show": 41,
+	"notes": ["She's Lillie's mom"],
+	"sources" : ["https://bulbapedia.bulbagarden.net/wiki/Lusamine"]
+}
