@@ -1,0 +1,9 @@
+{
+	"short_name": "Is Waifu legal?",
+	"name": "Is Your Waifu Legal?",
+	"start_url": "/is-your-waifu-legal",
+	"background_color": "#212121",
+	"display": "standalone",
+	"scope": "/is-your-waifu-legal/",
+	"theme_color": "#181818"
+  }
