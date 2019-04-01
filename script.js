@@ -158,7 +158,7 @@ function displayWaifuStats(name) {
         history.replaceState(historyState, "", query);
     }
     let request = new XMLHttpRequest();
-    request.open("GET", getCurrentURL() + "/waifus/" + input.toLowerCase() + ".json");
+    request.open("GET", getCurrentURL() + "waifus/" + input.toLowerCase() + ".json");
     request.responseType = "json";
     request.onerror = function (event) {
         console.log(event);
