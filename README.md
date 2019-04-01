@@ -24,7 +24,7 @@ Well it depends on the anime and the waifu in question.
 
 ## If a waifu turns 18 in the show, what would happen if you fapped to the wrong season?
 
-[This](https://www.youtube.com/watch?v=08vk9g-jcsM)
+[This happens](https://www.youtube.com/watch?v=08vk9g-jcsM)
 
 ## Were we supposed to not fap before?
 
