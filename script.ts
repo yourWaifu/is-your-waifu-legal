@@ -283,12 +283,13 @@ function displayWaifuStats(name : string) : void {
 		if (hasValue(data, "age-range-by-appearance") && data["age-range-by-appearance"][0] !== undefined) {
 			if (appearanceDataHTML !== "")
 				appearanceDataHTML += "<br>\n"
-			let startAge = data["age-range-by-appearance"][0];
+			let startAge : number = data["age-range-by-appearance"][0];
 			appearanceDataHTML += "looks about ";
 			appearanceDataHTML += startAge;
-			if (data["age-range-by-appearance"][1] !== undefined) {
+			let endAge : number | undefined = data["age-range-by-appearance"][1];
+			if (endAge !== undefined && startAge !== endAge) {
 				appearanceDataHTML += " to ";
-				appearanceDataHTML += data["age-range-by-appearance"][1];
+				appearanceDataHTML += endAge;
 			}
 			appearanceDataHTML += " years old\n"
 			if (appearanceAnswer !== "") {
