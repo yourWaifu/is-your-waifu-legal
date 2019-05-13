@@ -172,6 +172,29 @@ ul {
 	position: absolute;
 }
 
+.bottom-menu {
+	flex: 1 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-content: center;
+}
+
+.bottom-menu button {
+	border-style: none;
+	border-width: 0;
+	background-color: transparent;
+	color: white;
+}
+
+.mobile-search-button {
+	display: none;
+}
+
+.mobile-search-button-during-search {
+	display: none;
+}
+
 @media screen and (max-width: 55.5em) {
 	.header-container {
 		flex-direction: column;
@@ -234,6 +257,10 @@ ul {
 		/*There's an issue with firefox, where using %
 		  sets this to unset*/
 		height: calc(100vh - 7.25em);
+	}
+
+	.mobile-search-button {
+		display: unset;
 	}
 }
 

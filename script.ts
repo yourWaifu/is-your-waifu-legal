@@ -369,7 +369,9 @@ function displayWaifuStats(name : string) : void {
 }
 
 function onWaifuSearch() : void {
-	displayWaifuStats((<HTMLInputElement>document.getElementById("waifu-search")).value);
+	let searchBar : HTMLElement | null = document.getElementById("waifu-search");
+	if (searchBar !== null && (<HTMLInputElement>searchBar).value !== "")
+		displayWaifuStats((<HTMLInputElement>searchBar).value);
 }
 
 //Search prediction
@@ -543,11 +545,22 @@ function onClickWaifuPrediction(elementID:string) {
 	let showElements : Set<string> = new Set();
 	showElements.add("waifu-search");
 	showElements.add("waifu-predictions");
+	showElements.add("mobile-waifu-search-button");
 
-	let show : boolean = showElements.has(elementID);
+	let show : boolean =
+		showElements.has(elementID) ||
+		(document.activeElement !== null && document.activeElement.id === "waifu-search");
 
 	let menu : any = document.getElementById("waifu-predictions");
 	menu.style.display = show ? "unset" : "none";
+
+	//hide search button on mobile
+	let mobileSearchButton : HTMLElement | null =
+		document.getElementById("mobile-waifu-search-button");
+	if (mobileSearchButton === null)
+		return;
+	mobileSearchButton.className = show ?
+		"mobile-search-button-during-search" : "mobile-search-button"
 }
 
 let uiOnClickCallbacks : Array<Function> = new Array<Function>();
