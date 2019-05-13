@@ -255,9 +255,10 @@ function displayWaifuStats(name) {
             let startAge = data["age-range-by-appearance"][0];
             appearanceDataHTML += "looks about ";
             appearanceDataHTML += startAge;
-            if (data["age-range-by-appearance"][1] !== undefined) {
+            let endAge = data["age-range-by-appearance"][1];
+            if (endAge !== undefined && startAge !== endAge) {
                 appearanceDataHTML += " to ";
-                appearanceDataHTML += data["age-range-by-appearance"][1];
+                appearanceDataHTML += endAge;
             }
             appearanceDataHTML += " years old\n";
             if (appearanceAnswer !== "") {
@@ -331,7 +332,9 @@ function displayWaifuStats(name) {
     request.send();
 }
 function onWaifuSearch() {
-    displayWaifuStats(document.getElementById("waifu-search").value);
+    let searchBar = document.getElementById("waifu-search");
+    if (searchBar !== null && searchBar.value !== "")
+        displayWaifuStats(searchBar.value);
 }
 //Search prediction
 let searchTree = undefined;
@@ -491,9 +494,17 @@ function onClickWaifuPrediction(elementID) {
     let showElements = new Set();
     showElements.add("waifu-search");
     showElements.add("waifu-predictions");
-    let show = showElements.has(elementID);
+    showElements.add("mobile-waifu-search-button");
+    let show = showElements.has(elementID) ||
+        (document.activeElement !== null && document.activeElement.id === "waifu-search");
     let menu = document.getElementById("waifu-predictions");
     menu.style.display = show ? "unset" : "none";
+    //hide search button on mobile
+    let mobileSearchButton = document.getElementById("mobile-waifu-search-button");
+    if (mobileSearchButton === null)
+        return;
+    mobileSearchButton.className = show ?
+        "mobile-search-button-during-search" : "mobile-search-button";
 }
 let uiOnClickCallbacks = new Array();
 uiOnClickCallbacks.push(onClickWaifuPrediction);

@@ -36,4 +36,4 @@ Yea
 
 ## Why not just look it up on Google?
 
-Many wiki sites have info on this stuff, but you have to read through a bunch of other info to figure out the current age, the age in the show, and what season and ep they've become of legal age. This site is one place with all the age data and information about anime girl ages.
+Many wiki sites have info on this stuff, but you have to read through a bunch of other info to figure out the current age, the age in the show, and what season and ep they've become of legal age, and how mature they act. This site is one place with all the age data and information about anime girl ages.

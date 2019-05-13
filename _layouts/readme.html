@@ -18,9 +18,19 @@
 			Enter your waifu's name on the line above
 		</p>
 	</div>
-	<div style="
-		flex: 1 0;
-	"></div>	
+	<div class="bottom-menu">
+		<button 
+			type="button"
+			class="mobile-search-button"
+			id="mobile-waifu-search-button"
+			onclick='
+				document.getElementById("waifu-search").focus();
+			'
+		>
+			<i class="fas fa-search fa-2x" style="margin: 0 auto .25em auto;"></i><br>
+			Search
+		</button>
+	</div>
 	<div style="
 		height: 0;
 		margin: 0;
@@ -35,6 +45,14 @@
 		</p>
 	</div>
 </div>
-<div class="read-me">
-	{{ content }}
+<div class="read-me-container">
+	<div style="
+		flex: 1 0;
+	"></div>
+	<div class="read-me">
+		{{ content }}
+	</div>
+	<div style="
+		flex: 1 0;
+	"></div>
 </div>
