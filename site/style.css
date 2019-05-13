@@ -141,6 +141,15 @@ ul {
 	flex-direction: column;
 }
 
+.read-me-container {
+	position: absolute;
+	top: 90%;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	width: 100%;
+}
+
 .read-me {
 	max-width: 37em;
 	margin: 0 auto;
@@ -160,6 +169,7 @@ ul {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	position: absolute;
 }
 
 @media screen and (max-width: 55.5em) {
@@ -187,6 +197,7 @@ ul {
 
 	.dropdown-content {
 		top: 0em;
+		z-index: 1;
 	}
 
 	.waifu-body {
