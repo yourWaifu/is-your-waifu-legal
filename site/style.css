@@ -169,7 +169,6 @@ ul {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	position: absolute;
 }
 
 .bottom-menu {
@@ -251,12 +250,14 @@ ul {
 		  % was the height of the screen - height of link bar
 		  vh is the height of the screen*/
 		height: calc(100% - 7.25em);
+		position: absolute;
 	}
 
 	.front-screen-firefox {
 		/*There's an issue with firefox, where using %
 		  sets this to unset*/
 		height: calc(100vh - 7.25em);
+		position: absolute;
 	}
 
 	.mobile-search-button {
