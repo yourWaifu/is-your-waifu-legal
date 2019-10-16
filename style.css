@@ -89,7 +89,7 @@ ul {
 }
 
 h1 {
-	/*on Firefox, the line height is a bit strange*/
+	/*There are plug ins that mess me with this, so this is a fix*/
 	line-height: normal;
 }
 
