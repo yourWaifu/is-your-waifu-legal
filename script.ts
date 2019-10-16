@@ -475,6 +475,10 @@ function onWaifuPrediction() {
 	}
 }
 
+let inputHistory : Array<string> = [];
+let inputHistoryIndex : number = 0;
+let maxInputHistorySize : number = 128;
+
 function onWaifuPredictionAutoComplete() {
 	if (searchTree === undefined)
 		return;
@@ -489,7 +493,24 @@ function onWaifuPredictionAutoComplete() {
 	} else {
 		inputElement.value = predictions[0];
 	}
-} 
+	if (inputElement.value == input) //don't save input if it hasn't changed
+		return;
+	if (inputHistoryIndex < inputHistory.length) {
+		let removedElements = inputHistory.splice(inputHistoryIndex, inputHistory.length - inputHistoryIndex);
+	}
+	if (maxInputHistorySize <= inputHistory.length)
+		inputHistory.shift(); //keeps memory usage low
+	inputHistory.push(input);
+	inputHistoryIndex = inputHistory.length;
+}
+
+function getLastWaifuPredictionAutoComplete() {
+	if (inputHistory.length <= 0 || inputHistoryIndex <= 0)
+		return;
+	let inputElement = <HTMLInputElement>document.getElementById("waifu-search");
+	--inputHistoryIndex;
+	inputElement.value = inputHistory[inputHistoryIndex];
+}
 
 //read me
 function displayReadMe() : void {
