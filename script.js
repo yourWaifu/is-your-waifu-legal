@@ -251,10 +251,13 @@ function displayWaifuStats(name) {
             switch (data["age-group-by-appearance"]) {
                 case "child":
                     appearanceAnswer = "Doesn't look legal";
+                    break;
                 case "teenager":
                     appearanceAnswer = "Looks like they might too young to be legal. Maybe?";
+                    break;
                 default:
                     appearanceAnswer = "looks legal";
+                    break;
             }
         }
         if (hasValue(data, "age-range-by-appearance") && data["age-range-by-appearance"][0] !== undefined) {
