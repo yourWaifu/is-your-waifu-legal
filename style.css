@@ -88,6 +88,11 @@ ul {
 	overflow: auto;
 }
 
+h1 {
+	/*on Firefox, the line height is a bit strange*/
+	line-height: normal;
+}
+
 .title {
 	font-size: 2em;
 }
@@ -286,7 +291,7 @@ ul {
 
 	.waifu-image-parent {
 		flex: 1 1 auto;
-		margin: calc(2em * 0.67) .5em;
+		margin: calc(2em * 0.67) 0;
 	}
 
 	.waifu-image {
@@ -295,6 +300,7 @@ ul {
 
 	.waifu-stats {
 		margin-right: .5em;
+		margin-left: calc(2em * 0.67);
 	}
 
 	.front-screen, .front-screen-firefox {
