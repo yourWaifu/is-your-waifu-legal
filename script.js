@@ -134,6 +134,15 @@ function sanitizeInput(input) {
 function getCurrentURL() {
     return location.protocol + '//' + location.host + location.pathname;
 }
+function getWaifuNameHTML(englishName, CSSClass) {
+    let HTML = "";
+    HTML += "<h1 class=\"";
+    HTML += CSSClass;
+    HTML += "\">";
+    HTML += englishName;
+    HTML += "</h1>\n";
+    return HTML;
+}
 function displayWaifuStats(name) {
     let input = sanitizeInput(name);
     let foundOutput = document.getElementById("output");
@@ -190,12 +199,10 @@ function displayWaifuStats(name) {
             countdown = -1;
         }
         let data = this.response;
-        let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
-        newHTML += "<h1 class=\"waifu-name\">";
-        newHTML += englishName;
-        newHTML += "</h1>\n";
-        document.title = englishName + " - " + siteName;
         newHTML += "<div class=\"waifu-body\">\n";
+        let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
+        newHTML += getWaifuNameHTML(englishName, "waifu-name-small-screen");
+        document.title = englishName + " - " + siteName;
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
             newHTML += "<div class=\"waifu-image-parent\">\n";
@@ -207,6 +214,7 @@ function displayWaifuStats(name) {
             newHTML += "</div>\n";
         }
         newHTML += "<div class=\"waifu-stats\">\n";
+        newHTML += getWaifuNameHTML(englishName, "waifu-name-big-screen");
         if (hasValue(data, "definitely-legal") && data["definitely-legal"] === true)
             newHTML += "Definitely Legal<br><br>\n";
         //display birthday
