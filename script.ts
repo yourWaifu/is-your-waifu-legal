@@ -283,10 +283,13 @@ function displayWaifuStats(name : string) : void {
 			switch (data["age-group-by-appearance"]) {
 				case "child":
 					appearanceAnswer = "Doesn't look legal";
+					break;
 				case "teenager":
 					appearanceAnswer = "Looks like they might too young to be legal. Maybe?";
+					break;
 				default:
 					appearanceAnswer = "looks legal";
+					break;
 			}
 
 		}
