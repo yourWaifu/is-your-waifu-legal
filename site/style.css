@@ -88,6 +88,11 @@ ul {
 	overflow: auto;
 }
 
+h1 {
+	/*on Firefox, the line height is a bit strange*/
+	line-height: normal;
+}
+
 .title {
 	font-size: 2em;
 }
