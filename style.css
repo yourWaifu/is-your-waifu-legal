@@ -203,6 +203,16 @@ h1 {
 	display: none;
 }
 
+.flex-margins-mobile-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+.flex-center-mobile {
+	flex: 1 1;
+}
+
 @media screen and (max-width: 55.5em) {
 	.header-container {
 		flex-direction: column;
@@ -233,14 +243,17 @@ h1 {
 
 	.waifu-body {
 		flex-wrap: wrap;
-		margin: 0 .5em .5em .5em;
 	}
 
 	.waifu-name-small-screen {
-		max-width: calc(37em/2);
-		width: 100%;
 		margin-left: auto;
 		margin-right: auto;
+		flex: 0 1 calc(37em/2);
+	}
+
+	.flex-margins-mobile {
+		flex: 0 0 .5em;
+		width: .5em;
 	}
 
 	.waifu-name-big-screen {
@@ -256,7 +269,6 @@ h1 {
 	.waifu-stats {
 		flex-shrink: 1;
 		width: 100vw;
-		margin: 0 auto;
 	}
 
 	.front-screen {
@@ -285,6 +297,10 @@ h1 {
 		justify-content: space-between;
 	}
 
+	.flex-margins-mobile-container {
+		display: contents;
+	}
+
 	.waifu-name-small-screen {
 		display: none;
 	}
@@ -292,6 +308,14 @@ h1 {
 	.waifu-image-parent {
 		flex: 1 1 auto;
 		margin: calc(2em * 0.67) 0;
+	}
+
+	.flex-margins-mobile {
+		display: none;
+	}
+
+	.flex-center-mobile {
+		display: none;
 	}
 
 	.waifu-image {

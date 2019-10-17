@@ -143,6 +143,9 @@ function getWaifuNameHTML(englishName, CSSClass) {
     HTML += "</h1>\n";
     return HTML;
 }
+function getMarginMobile() {
+    return "<div class=\"flex-margins-mobile\"></div>";
+}
 function displayWaifuStats(name) {
     let input = sanitizeInput(name);
     let foundOutput = document.getElementById("output");
@@ -201,7 +204,11 @@ function displayWaifuStats(name) {
         let data = this.response;
         newHTML += "<div class=\"waifu-body\">\n";
         let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
+        newHTML += "<div class=\"flex-margins-mobile-container\">\n";
+        newHTML += getMarginMobile();
         newHTML += getWaifuNameHTML(englishName, "waifu-name-small-screen");
+        newHTML += getMarginMobile();
+        newHTML += "</div>";
         document.title = englishName + " - " + siteName;
         //display waifu image
         if (data.hasOwnProperty("image") && data["image"] !== null && data["image"] !== "") {
@@ -213,6 +220,9 @@ function displayWaifuStats(name) {
             newHTML += "\">\n";
             newHTML += "</div>\n";
         }
+        newHTML += "<div class=\"flex-margins-mobile-container\">\n";
+        newHTML += getMarginMobile();
+        newHTML += "<div class=\"flex-center-mobile\"></div>";
         newHTML += "<div class=\"waifu-stats\">\n";
         newHTML += getWaifuNameHTML(englishName, "waifu-name-big-screen");
         if (hasValue(data, "definitely-legal") && data["definitely-legal"] === true)
@@ -336,6 +346,9 @@ function displayWaifuStats(name) {
         }
         newHTML += createListHtml("notes", "Notes");
         newHTML += createListHtml("sources", "Sources");
+        newHTML += "</div>\n";
+        newHTML += "<div class=\"flex-center-mobile\"></div>";
+        newHTML += getMarginMobile();
         newHTML += "</div>\n";
         newHTML += "</div>\n";
         output.innerHTML = newHTML;
