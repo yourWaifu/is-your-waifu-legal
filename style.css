@@ -260,10 +260,14 @@ h1 {
 		display: none;
 	}
 
-	.waifu-image {
+	.waifu-image-parent {
+		overflow: auto;
 		max-height: 50vh;
-		width: 100vw;
-		object-fit: contain;
+		width: 100%;
+	}
+
+	.waifu-image {
+		max-width: 100vw;
 	}
 
 	.waifu-stats {
