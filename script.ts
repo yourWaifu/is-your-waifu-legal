@@ -163,6 +163,10 @@ function getWaifuNameHTML(englishName : string, CSSClass : string) : string {
 	return HTML;
 }
 
+function getMarginMobile() : string {
+	return "<div class=\"flex-margins-mobile\"></div>";
+}
+
 function displayWaifuStats(name : string) : void {
 	let input : string = sanitizeInput(name);
 	let foundOutput : HTMLElement | null = document.getElementById("output");
@@ -226,7 +230,11 @@ function displayWaifuStats(name : string) : void {
 		newHTML += "<div class=\"waifu-body\">\n"
 
 		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
+		newHTML += "<div class=\"flex-margins-mobile-container\">\n"
+		newHTML += getMarginMobile();
 		newHTML += getWaifuNameHTML(englishName, "waifu-name-small-screen");
+		newHTML += getMarginMobile();
+		newHTML += "</div>";
 		document.title = englishName + " - " + siteName;
 
 		//display waifu image
@@ -240,6 +248,9 @@ function displayWaifuStats(name : string) : void {
 			newHTML += "</div>\n";
 		}
 
+		newHTML += "<div class=\"flex-margins-mobile-container\">\n"
+		newHTML += getMarginMobile();
+		newHTML += "<div class=\"flex-center-mobile\"></div>";
 		newHTML += "<div class=\"waifu-stats\">\n";
 
 		newHTML += getWaifuNameHTML(englishName, "waifu-name-big-screen");
@@ -374,7 +385,10 @@ function displayWaifuStats(name : string) : void {
 		newHTML += createListHtml("sources", "Sources");
 
 		newHTML += "</div>\n"
+		newHTML += "<div class=\"flex-center-mobile\"></div>";
+		newHTML += getMarginMobile();
 		newHTML += "</div>\n"
+		newHTML += "</div>\n";
 
 		output.innerHTML = newHTML;
 	}
