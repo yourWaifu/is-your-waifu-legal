@@ -230,11 +230,6 @@ function displayWaifuStats(name : string) : void {
 		newHTML += "<div class=\"waifu-body\">\n"
 
 		let englishName : string = data.hasOwnProperty("english-name") ? data["english-name"] : "";
-		newHTML += "<div class=\"flex-margins-mobile-container\">\n"
-		newHTML += getMarginMobile();
-		newHTML += getWaifuNameHTML(englishName, "waifu-name-small-screen");
-		newHTML += getMarginMobile();
-		newHTML += "</div>";
 		document.title = englishName + " - " + siteName;
 
 		//display waifu image
@@ -252,7 +247,7 @@ function displayWaifuStats(name : string) : void {
 		newHTML += getMarginMobile();
 		newHTML += "<div class=\"waifu-stats\">\n";
 
-		newHTML += getWaifuNameHTML(englishName, "waifu-name-big-screen");
+		newHTML += getWaifuNameHTML(englishName, "waifu-name");
 
 		if (hasValue(data, "definitely-legal") && data["definitely-legal"] === true)
 			newHTML += "Definitely Legal<br><br>\n"

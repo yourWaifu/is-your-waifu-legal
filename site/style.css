@@ -109,11 +109,7 @@ h1 {
 	font-size: 1em;
 }
 
-.waifu-name-small-screen {
-	overflow: auto;
-}
-
-.waifu-name-big-screen {
+.waifu-name {
 	overflow: auto;
 }
 
@@ -245,7 +241,7 @@ h1 {
 		flex-wrap: wrap;
 	}
 
-	.waifu-name-small-screen {
+	.waifu-name {
 		margin-left: auto;
 		margin-right: auto;
 		flex: 0 1 calc(37em/2);
@@ -254,10 +250,6 @@ h1 {
 	.flex-margins-mobile {
 		flex: 0 0 .5em;
 		width: .5em;
-	}
-
-	.waifu-name-big-screen {
-		display: none;
 	}
 
 	.waifu-image-parent {
@@ -272,9 +264,8 @@ h1 {
 
 	.waifu-stats {
 		flex-shrink: 1;
-		width: 100vw;
+		width: calc(100% - 1em);
 		margin: 0 auto;
-		margin-top: .5em;
 	}
 
 	.front-screen {
@@ -305,10 +296,6 @@ h1 {
 
 	.flex-margins-mobile-container {
 		display: contents;
-	}
-
-	.waifu-name-small-screen {
-		display: none;
 	}
 
 	.waifu-image-parent {
