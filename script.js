@@ -257,7 +257,7 @@ function displayWaifuStats(name) {
                     appearanceAnswer = "Doesn't look legal";
                     break;
                 case "teenager":
-                    appearanceAnswer = "Looks like they might too young to be legal. Maybe?";
+                    appearanceAnswer = "Looks like they might be too young to be legal. Maybe?";
                     break;
                 default:
                     appearanceAnswer = "looks legal";
