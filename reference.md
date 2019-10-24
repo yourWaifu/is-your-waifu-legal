@@ -1,3 +1,26 @@
+# Development
+
+You'll need to install the dependencies, to do that [install node](https://nodejs.org/en/) and use this command. You only need to do this once.
+
+```
+npm install
+```
+then run the shell script to generate the site. You'll need to do this for every change you make.
+```
+bash ./generate-site.sh
+```
+change the current directory to the output and run jekyll. I also recommend opening a new console window/tab for doing this, so that jekyll can watch for changes from the generate-site script and automatically generate the site for you.
+```
+cd output-site
+jekyll s
+```
+Jekyll will output a server address, open your browser and use that address as a link to open the site on your browser.
+```
+# Look out for this line from jekyll #
+    Server address: http://127.0.0.1:4000
+```
+To stop jekyll, press ctrl + c.
+
 # Reference
 
 ## format
