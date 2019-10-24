@@ -258,10 +258,6 @@ h1 {
 		width: 100%;
 	}
 
-	.waifu-image {
-		max-width: 100vw;
-	}
-
 	.waifu-stats {
 		flex-shrink: 1;
 		width: calc(100% - 1em);
