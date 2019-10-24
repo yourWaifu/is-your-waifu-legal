@@ -1,0 +1,17 @@
+{
+  "type": 0,
+  "english-name": "Haruhi Suzumiya",
+  "image": "https://vignette.wikia.nocookie.net/haruhi/images/c/cb/Haruhi_Suzumiya.png",
+  "japanese-name": "涼宮ハルヒ",
+  "month": 10,
+  "day-of-month": 8,
+  "age-in-show": 16,
+  "definitely-legal": true,
+  "is-a-trap": false,
+  "age-group-by-appearance": "teenager",
+  "notes": [
+    "In \"The Melancholy of Haruhi Suzumiya\", she is in high school.",
+    "In the light novel \"The Surprise of Haruhi Suzumiya\", she is in college."
+  ],
+  "sources": ["https://haruhi.fandom.com/wiki/Haruhi_Suzumiya"]
+}
