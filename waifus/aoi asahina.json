@@ -1,0 +1,18 @@
+{
+  "type": 0,
+  "english-name": "Aoi Asahina",
+  "japanese-name": "朝日奈 葵",
+  "aliases": [
+    "Hina",
+    "Ultimate Swimming Pro",
+    "Super High School Level Level Swimmer"
+  ],
+  "image": "https://vignette.wikia.nocookie.net/danganronpa/images/6/67/Aoi_Asahina_Illustration.png",
+  "month": 4,
+  "day-of-month": 24,
+  "definitely-legal": false,
+  "is-a-trap": false,
+  "age-group-by-appearance": "teenager",
+  "notes": ["Hina is a high school student."],
+  "sources": ["https://danganronpa.fandom.com/wiki/Aoi_Asahina"]
+}
