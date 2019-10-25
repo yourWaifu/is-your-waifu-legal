@@ -225,6 +225,11 @@ function displayWaifuStats(name : string) : void {
 			countdown = -1;
 		}
 
+		if (this.response === null) {
+			output.innerHTML = "<h1>ERROR:</h1><br>Response from server was null";
+			return;
+		}
+
 		let data : JSON = this.response;
 
 		newHTML += "<div class=\"waifu-body\">\n"
