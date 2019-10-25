@@ -1,0 +1,14 @@
+{
+  "type": 0,
+  "english-name": "Kinzie Kensington",
+  "aliases": ["Mousey-one", "Agent Kensington"],
+  "image": "https://vignette.wikia.nocookie.net/saintsrow/images/3/36/Kinzie_-_Saints_Row_The_Third_promo.png",
+  "definitely-legal": true,
+  "is-a-trap": false,
+  "age-group-by-appearance": "adult",
+  "age-range-by-appearance": [20, 35],
+  "notes": [
+    "Kinzie used to work for the FBI, so it's very unlikely that she's underage."
+  ],
+  "sources": ["https://saintsrow.fandom.com/wiki/Kinzie_Kensington"]
+}

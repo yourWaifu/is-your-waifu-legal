@@ -1,0 +1,15 @@
+{
+  "type": 0,
+  "english-name": "Elizabeth Comstock",
+  "aliases": ["Anna DeWitt"],
+  "image": "https://vignette.wikia.nocookie.net/bioshock/images/0/07/Elizabeth-C.png",
+  "age-in-show": 19,
+  "year": 1893,
+  "definitely-legal": true,
+  "is-a-trap": false,
+  "age-group-by-appearance": "adult",
+  "notes": [
+    "Her birth year is 1893, and near the beginning of BioShock Infinite it is 1912, making her around 19."
+  ],
+  "sources": ["https://bioshock.fandom.com/wiki/Elizabeth"]
+}

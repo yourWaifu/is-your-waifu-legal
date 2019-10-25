@@ -1,0 +1,14 @@
+{
+  "type": 0,
+  "english-name": "Junko Enoshima",
+  "japanese-name": "江ノ島 盾子",
+  "aliases": ["Ultimate Fashionista", "Super High School Level Fashion Girl"],
+  "image": "https://vignette.wikia.nocookie.net/danganronpa/images/5/5e/Junko_Enoshima_Illustration.png",
+  "month": 12,
+  "day-of-month": 24,
+  "definitely-legal": false,
+  "is-a-trap": false,
+  "age-group-by-appearance": "teenager",
+  "notes": ["Junko is a high school student."],
+  "sources": ["https://danganronpa.fandom.com/wiki/Junko_Enoshima"]
+}
