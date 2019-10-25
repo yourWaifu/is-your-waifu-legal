@@ -2,7 +2,7 @@
 
 ## General
 
-| Variable        | Type                   | Required/Optional    | Description                      |
+| Variable        | Type                   | Flags    | Description                      |
 | ----------------|------------------------| ---------------------|----------------------------------|
 | `type`       | number                              | required | unused, for future use. Keep at 0 for now. |
 | `english-name`        | string             |   optional           | |
