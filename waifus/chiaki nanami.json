@@ -1,0 +1,16 @@
+{
+  "type": 0,
+  "english-name": "Chiaki Nanami",
+  "japanese-name": "七海 千秋",
+  "aliases": ["Ultimate Gamer", "Super High School Level Gamer"],
+  "image": "https://vignette.wikia.nocookie.net/danganronpa/images/a/a0/Chiaki_Nanami_Illustration.png",
+  "month": 3,
+  "day-of-month": 14,
+  "definitely-legal": false,
+  "is-a-trap": false,
+  "age-group-by-appearance": "teenager",
+  "notes": ["Chiaki is a high school student."],
+  "sources": [
+    "https://danganronpa.fandom.com/wiki/Chiaki_Nanami_(Danganronpa_2)"
+  ]
+}

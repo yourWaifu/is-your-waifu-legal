@@ -1,0 +1,14 @@
+{
+  "type": 0,
+  "english-name": "Maxine Caulfield",
+  "aliases": ["Max", "Mad Max", "Max Factor", "Noir Angel", "Super Max"],
+  "image": "https://vignette.wikia.nocookie.net/life-is-strange/images/d/df/Max_.png",
+  "month": 9,
+  "day-of-month": 21,
+  "year": 1995,
+  "age-in-show": 18,
+  "definitely-legal": true,
+  "is-a-trap": false,
+  "age-group-by-appearance": "teenager",
+  "sources": ["https://life-is-strange.fandom.com/wiki/Max_Caulfield"]
+}

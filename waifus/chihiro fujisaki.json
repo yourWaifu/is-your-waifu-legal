@@ -1,0 +1,14 @@
+{
+  "type": 0,
+  "english-name": "Chihiro Fujisaki",
+  "japanese-name": "不二咲 千尋",
+  "aliases": ["Ultimate Programmer", "Super High School Level Programmer"],
+  "image": "https://vignette.wikia.nocookie.net/danganronpa/images/7/7e/Chihiro_Fujisaki_Illustration.png",
+  "month": 3,
+  "day-of-month": 14,
+  "definitely-legal": false,
+  "is-a-trap": true,
+  "age-group-by-appearance": "teenager",
+  "notes": ["Chihiro is a high school student."],
+  "sources": ["https://danganronpa.fandom.com/wiki/Chihiro_Fujisaki"]
+}
