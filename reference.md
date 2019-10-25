@@ -18,7 +18,7 @@
 
 if not legal based on birthday, then there will be a countdown displayed for when they become legal.
 
-| Variable        | Type                   | Required/Optional    | Description                      |
+| Variable        | Type                   | Flags    | Description                      |
 | ----------------|------------------------| ---------------------|----------------------------------|
 | `month`  | number                   | optional                 | |
 | `day-of-month` | number     | optional             | |
@@ -26,14 +26,14 @@ if not legal based on birthday, then there will be a countdown displayed for whe
 
 ## Appearence variables 
 
-| Variable        | Type                   | Required/Optional    | Description                      |
+| Variable        | Type                   | Flags    | Description                      |
 | ----------------|------------------------| ---------------------|----------------------------------|
 | `age-group-by-appearance`  | string | optional                    | can be child or teenager or adult  |
 | `age-range-by-appearance` | array of 2 numbers      | optional                 | the first number is the start of the range and the 2nd is the end of the range. For example, ages 1 to 10 is [1, 10] |
 
 ## Story variables
 
-| Variable        | Type                   | Required/Optional    | Description                      |
+| Variable        | Type                   | Flags    | Description                      |
 | ----------------|------------------------| ---------------------|----------------------------------|
 | `age-in-show`  | number                 | optional                     | the age of the waifu during the story |
 | `finally-legal-in-show`  | number                    | optional                     | the episode, movie, volume, etc. when they became of legal age |
