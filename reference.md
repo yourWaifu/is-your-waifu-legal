@@ -23,143 +23,40 @@ To stop jekyll, press ctrl + c.
 
 # Reference
 
-## format
-```md
-## variable name
+## General
 
-required or optional
+| Variable        | Type                   | Flags    | Description                      |
+| ----------------|------------------------| ---------------------|----------------------------------|
+| `type`       | number                              | required | unused, for future use. Keep at 0 for now. |
+| `english-name`        | string             |   optional           | |
+| `japanese-name`         | string                |   optional            |  |
+| `aliases`        | array of strings                   |   optional             | other names the waifu is known as. |
+| `image`     | string                  |   optional                | a link to a picture of the waifu |
+| `notes`     | array of strings                  | optional           | each element in the array is one bullet point or one point |
+| `sources`     | array of strings                    | required           | each element in the array is one link to where this info came from. It can be a video or an article or book or etc. |
+| `definitely-legal`   | boolean               |  optional                    | true if notes or other info states she's legal |
+| `is-a-trap`   | boolean                    | optional         | unused |
 
-possible types
-
-description (optional)
-```
-
-# General
-
-## type
-
-required
-
-number
-
-unused, for future use. Keep at 0 for now.
-
-## english-name
-
-optional
-
-string
-
-## japanese-name
-
-optional
-
-string
-
-## aliases
-
-optional
-
-array of strings
-
-other names the waifu is known as.
-
-## image
-
-optional
-
-string
-
-a link to a picture of the waifu
-
-## notes
-
-optional
-
-array of strings
-
-each element in the array is one bullet point or one point.
-
-## sources
-
-required
-
-array of strings
-
-each element in the array is one link to where this info came from. It can be a video or an article or book or etc.
-
-## definitely-legal
-
-optional
-
-boolean
-
-true if notes or other info states she's legal
-
-## is-a-trap
-
-optional
-
-boolean
-
-unused
-
-# Birthday variables
+## Birthday variables
 
 if not legal based on birthday, then there will be a countdown displayed for when they become legal.
 
-## month
+| Variable        | Type                   | Flags    | Description                      |
+| ----------------|------------------------| ---------------------|----------------------------------|
+| `month`  | number                   | optional                 | |
+| `day-of-month` | number     | optional             | |
+| `year` | number | optional  |  |
 
-optional
+## Appearence variables 
 
-number
+| Variable        | Type                   | Flags    | Description                      |
+| ----------------|------------------------| ---------------------|----------------------------------|
+| `age-group-by-appearance`  | string | optional                    | can be child or teenager or adult  |
+| `age-range-by-appearance` | array of 2 numbers      | optional                 | the first number is the start of the range and the 2nd is the end of the range. For example, ages 1 to 10 is [1, 10] |
 
-the number of the month of the birthday
+## Story variables
 
-## day-of-month
-
-optional
-
-number
-
-## year
-
-optional
-
-number
-
-# Appearance variables
-
-## age-group-by-appearance
-
-optional
-
-string
-
-can child or teenager or adult
-
-## age-range-by-appearance
-
-optional
-
-array of 2 numbers
-
-the first number is the start of the range and the 2nd is the end of the range. For example, ages 1 to 10 is [1, 10]
-
-# Story variables
-
-## age-in-show
-
-optional
-
-number
-
-the age of the waifu during the story
-
-## finally-legal-in-show
-
-optional
-
-number
-
-the episode, movie, volume, etc. when they became of legal age
+| Variable        | Type                   | Flags    | Description                      |
+| ----------------|------------------------| ---------------------|----------------------------------|
+| `age-in-show`  | number                 | optional                     | the age of the waifu during the story |
+| `finally-legal-in-show`  | number                    | optional                     | the episode, movie, volume, etc. when they became of legal age |
