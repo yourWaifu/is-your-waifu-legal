@@ -201,6 +201,10 @@ function displayWaifuStats(name) {
             clearInterval(countdown);
             countdown = -1;
         }
+        if (this.response === null) {
+            output.innerHTML = "<h1>ERROR:</h1><br>Response from server was null";
+            return;
+        }
         let data = this.response;
         newHTML += "<div class=\"waifu-body\">\n";
         let englishName = data.hasOwnProperty("english-name") ? data["english-name"] : "";
