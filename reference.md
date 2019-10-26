@@ -3,6 +3,7 @@
 You'll need to install the dependencies, to do that [install node](https://nodejs.org/en/) and use this command. You only need to do this once.
 
 ```
+cd is-your-waifu-legal
 npm install
 ```
 then run the shell script to generate the site. You'll need to do this for every change you make.
