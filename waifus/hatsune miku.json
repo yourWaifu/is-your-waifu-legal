@@ -1,12 +1,19 @@
 {
-	"type" : 0,
-	"english-name" : "Hatsune Miku",
-  "alias" : ["Miku","Hatsune","Vocaloid],
-	"image" : "https://ec.crypton.co.jp/img/special/vocaloid/img_MIKU_us.png",
-	"japanese-name" : "初音ミク",
-  "year" : 2007,
-	"month" : 8,
-	"day-of-month" : 31,
-	"age-in-show": 16,
-	"sources" : ["https://ec.crypton.co.jp/pages/prod/vocaloid/cv01_us"]
+    "type": 0,
+    "english-name": "Hatsune Miku",
+    "alias": [
+        "Miku",
+        "Hatsune",
+        "Vocaloid"
+    ],
+    "image": "https://ec.crypton.co.jp/img/special/vocaloid/img_MIKU_us.png",
+    "japanese-name": "初音ミク",
+    "year": 2007,
+    "month": 8,
+    "day-of-month": 31,
+    "age-in-show": 16,
+    "sources": [
+        "https://ec.crypton.co.jp/pages/prod/vocaloid/cv01_us",
+        "https://en.wikipedia.org/wiki/Hatsune_Miku"
+    ]
 }
