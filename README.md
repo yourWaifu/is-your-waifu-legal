@@ -13,8 +13,10 @@ It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some
 5. Name it the english name.json
 6. Fill in the details. [Use this as an example](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/waifus/futaba%20sakura.json) and here's a [List of all values](https://github.com/yourWaifu/is-this-waifu-legal/tree/master/reference.md#reference).
 7. Save and commit changes.
-8. [Create pull request](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork)
-9.  Wait for more instructions if needed. If not needed, it'll be accepted and the waifu will be added to the list.
+8. On your fork on GitHub, click Compare & pull request to create your request.
+9. Wait for more instructions if needed. If not needed, it'll be accepted and the waifu will be added to the list.
+
+If you need more help, please [read the First Contributions Guide.](https://github.com/firstcontributions/first-contributions/blob/master/README.md)
 
 # FAQ
 
