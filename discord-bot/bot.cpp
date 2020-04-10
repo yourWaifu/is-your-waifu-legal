@@ -193,7 +193,11 @@ int main() {
 					waifuName + ".json" });
 
 				if (response.status_code != 200)
-					client.sendMessage(message.channelID, "Couldn't the waifu you requested", SleepyDiscord::Async);
+					client.sendMessage(message.channelID, 
+					"Couldn't find the waifu you requested.\n"
+					"You can add them by following this link."
+					"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>",
+					SleepyDiscord::Async);
 
 				rapidjson::Document document;
 				document.Parse(response.text.c_str(), response.text.length());
