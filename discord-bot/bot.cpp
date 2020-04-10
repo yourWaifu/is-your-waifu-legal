@@ -56,17 +56,20 @@ class WaifuClient : public SleepyDiscord::DiscordClient {
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;
 	void onMessage(SleepyDiscord::Message message) override {
-		if (message.isMentioned(getID()))
+		if (message.isMentioned(getID()) || message.startsWith("whcg "))
 		{
 			std::queue<std::string> parameters = split(message.content);
 			const std::string mention = "<@" + getID().string() + ">";
 			const std::string mentionNick = "<@!" + getID().string() + ">";
 			if (
 				//only allow if has more then 1 parameter 
-				parameters.size() <= 1 &&
-				//only allow if starts with a mention
-				(parameters.front() != mention || parameters.front() != mentionNick)
+				parameters.size() <= 1 && (
+					//only allow if starts with a mention
+					parameters.front() != mention || parameters.front() != mentionNick ||
+					//or starts with whcg
+					parameters.front() == "whcg"
 				)
+			)
 				return;
 
 			//remove the parameters as we go
