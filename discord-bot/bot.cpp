@@ -204,7 +204,8 @@ int main() {
 
 				auto definitelyLegal = document.FindMember("definitely-legal");
 				if (definitelyLegal != document.MemberEnd() && definitelyLegal->value.IsBool())
-					embed.description += "Definitely Legal\n";
+					embed.description += definitelyLegal->value.GetBool() ? "Definitely of legal age\n" :
+						"Definitely not of legal age\n";
 
 				auto year = document.FindMember("year");
 				if (year != document.MemberEnd() && year->value.IsInt())
