@@ -1,5 +1,8 @@
 output-site
 tsc-output
+discord-bot/out
+discord-bot/DiscordToken.txt
+discord-bot/.vs
 
 ## node js files
 
