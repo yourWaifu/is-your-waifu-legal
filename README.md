@@ -4,6 +4,16 @@ layout: readme
 
 It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some people (Not us), have issues with lolis in NSFW stuff, which is why this tool exist. This tool's purpose is to make it easy to calculate the **current** age of a waifu.
 
+## Discord Bot
+
+Is Your Waifu Legal is also available as a Discord Bot. [Click here to invite](https://discordapp.com/oauth2/authorize?client_id=185977385416523776&scope=bot&permissions=18432). Just start your message with ``whcg``, short for **W**hite **H**aired **C**at **G**irl, and the name of the waifu.
+ * [View on Discord Bot List](https://top.gg/bot/186151807699910656)
+ * [View on Discord Bots](https://discord.bots.gg/bots/186151807699910656)
+
+## Donate 
+
+[Sponsor on Github](https://github.com/sponsors/yourWaifu)
+
 # How to add a Waifu to the list?
 
 1. Make sure you have a github account. If you don't, [create one](https://github.com/join).
