@@ -62,12 +62,14 @@ public:
 			const std::string mention = "<@" + getID().string() + ">";
 			const std::string mentionNick = "<@!" + getID().string() + ">";
 			if (
-				//only allow if has more then 1 parameter 
-				parameters.size() <= 1 && (
-					//only allow if starts with a mention
-					parameters.front() != mention || parameters.front() != mentionNick ||
-					//or starts with whcg
-					parameters.front() == "whcg"
+				!(
+					//only allow if has more then 1 parameter 
+					1 < parameters.size() && (
+						//only allow if starts with a mention
+						parameters.front() == mention || parameters.front() == mentionNick ||
+						//or starts with whcg
+						parameters.front() == "whcg"
+					)
 				)
 			)
 				return;
@@ -195,7 +197,7 @@ int main() {
 				if (response.status_code != 200)
 					client.sendMessage(message.channelID, 
 					"Couldn't find the waifu you requested.\n"
-					"You can add them by following this link."
+					"You can add them by following this link: "
 					"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>",
 					SleepyDiscord::Async);
 
