@@ -61,17 +61,22 @@ public:
 	}
 	
 	void onMessage(SleepyDiscord::Message message) override {
-		if (message.isMentioned(getID()))
+		if (message.isMentioned(getID()) || message.startsWith("whcg "))
 		{
 			std::queue<std::string> parameters = split(message.content);
 			const std::string mention = "<@" + getID().string() + ">";
 			const std::string mentionNick = "<@!" + getID().string() + ">";
 			if (
-				//only allow if has more then 1 parameter 
-				parameters.size() <= 1 &&
-				//only allow if starts with a mention
-				(parameters.front() != mention || parameters.front() != mentionNick)
+				!(
+					//only allow if has more then 1 parameter 
+					1 < parameters.size() && (
+						//only allow if starts with a mention
+						parameters.front() == mention || parameters.front() == mentionNick ||
+						//or starts with whcg
+						parameters.front() == "whcg"
+					)
 				)
+			)
 				return;
 
 			//remove the parameters as we go
@@ -222,7 +227,11 @@ int main() {
 					waifuName + ".json" });
 
 				if (response.status_code != 200)
-					client.sendMessage(message.channelID, "Couldn't the waifu you requested", SleepyDiscord::Async);
+					client.sendMessage(message.channelID, 
+					"Couldn't find the waifu you requested.\n"
+					"You can add them by following this link: "
+					"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>",
+					SleepyDiscord::Async);
 
 				rapidjson::Document document;
 				document.Parse(response.text.c_str(), response.text.length());
@@ -233,7 +242,8 @@ int main() {
 
 				auto definitelyLegal = document.FindMember("definitely-legal");
 				if (definitelyLegal != document.MemberEnd() && definitelyLegal->value.IsBool())
-					embed.description += "Definitely Legal\n";
+					embed.description += definitelyLegal->value.GetBool() ? "Definitely of legal age\n" :
+						"Definitely not of legal age\n";
 
 				auto year = document.FindMember("year");
 				if (year != document.MemberEnd() && year->value.IsInt())
