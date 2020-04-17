@@ -54,7 +54,12 @@ namespace Command {
 
 class WaifuClient : public SleepyDiscord::DiscordClient {
 public:
-	using SleepyDiscord::DiscordClient::DiscordClient;
+	WaifuClient(const std::string token) :
+		SleepyDiscord::DiscordClient(token, SleepyDiscord::USER_CONTROLED_THREADS)
+	{
+		updateSearchTree();
+	}
+	
 	void onMessage(SleepyDiscord::Message message) override {
 		if (message.isMentioned(getID()))
 		{
@@ -96,8 +101,35 @@ public:
 
 			//call command
 			foundCommand->second.verb(*this, message, parameters);
+		} 
+		// else if channel is the github updates channel, update search tree
+		else if (message.channelID == "700570024523595786") {
+			//we have the github webhook set up to only send page build updates
+			asio::post([this]() {
+				updateSearchTree();
+			});
 		}
 	}
+
+	void updateSearchTree() {
+		hasSearchTree = false;
+		rapidjson::Document newSearchTree;
+		auto response = cpr::Get(
+			cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/search-tree.json" });
+
+		if (response.status_code != 200)
+			return;
+
+		newSearchTree.Parse(response.text.c_str(), response.text.length());
+		if (newSearchTree.HasParseError())
+			return;
+
+		searchTree = std::move(newSearchTree);
+		hasSearchTree = true;
+	}
+private:
+	bool hasSearchTree = false;
+	rapidjson::Document searchTree;
 };
 
 int main() {
@@ -231,6 +263,6 @@ int main() {
 
 	Command::defaultCommand = &(Command::all.at("legal"));
 
-	WaifuClient client(token, SleepyDiscord::USER_CONTROLED_THREADS);
+	WaifuClient client(token);
 	client.run();
 }
