@@ -60,4 +60,4 @@ if not legal based on birthday, then there will be a countdown displayed for whe
 | Variable        | Type                   | Flags    | Description                      |
 | ----------------|------------------------| ---------------------|----------------------------------|
 | `age-in-show`  | number                 | optional                     | the age of the waifu during the story |
-| `finally-legal-in-show`  | number                    | optional                     | the episode, movie, volume, etc. when they became of legal age |
+| `finally-legal-in-show`  | string                    | optional                     | the episode, movie, volume, etc. when they became of legal age |
