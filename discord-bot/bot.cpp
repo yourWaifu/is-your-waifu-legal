@@ -27,6 +27,135 @@ void makeLowerCaseOnly(std::string& string) {
 		[](unsigned char c) { return std::tolower(c); });
 }
 
+//Discord repo watch
+class DiscordAPIDocsRepoWatcher {
+public:
+	void pollTomarrow(SleepyDiscord::DiscordClient& client) {
+		client.schedule([=, &client]() {
+			pollImplementation(client);
+			pollTomarrow(client);
+		}, oneDayInMilliseconds);
+	}
+
+	void start(SleepyDiscord::DiscordClient& client) {
+		asio::post([=, &client]() {
+			//get lastCommitSha
+			//to do this code is used twice, make it a function
+			auto response = cpr::Get(cpr::Url{ repoCommitsLink });
+			if (response.status_code != 200)
+				return;
+			
+			rapidjson::Document document;
+				document.Parse(response.text.c_str(), response.text.length());
+			if (document.HasParseError())
+				return;
+
+			auto commits = document.GetArray();
+			auto& lastCommit = commits[0];
+			auto sha = lastCommit.FindMember("sha");
+			if (sha == lastCommit.MemberEnd() || !sha->value.IsString())
+				return;
+			
+			lastCommitSha = std::string{sha->value.GetString(), 
+				sha->value.GetStringLength()};
+
+			pollTomarrow(client);
+		});
+	}
+private:
+	void pollImplementation(SleepyDiscord::DiscordClient& client) {
+		asio::post([=, &client]() {
+			const SleepyDiscord::Snowflake<SleepyDiscord::Channel>
+				channel = "721828297087909950";
+
+			auto response = cpr::Get(cpr::Url{ repoCommitsLink });
+			if (response.status_code != 200)
+				return;
+
+			rapidjson::Document document;
+				document.Parse(response.text.c_str(), response.text.length());
+			if (document.HasParseError())
+				return;
+
+			auto commits = document.GetArray();
+			auto lastCommitIterator = commits.end();
+			int index = 0;
+			for (auto& commit : commits) {
+				auto sha = commit.FindMember("sha");
+				if (sha == commit.MemberEnd() || !sha->value.IsString()) {
+					index += 1;
+					continue;
+				}
+				//to do use string_view
+				std::string shaStr{ sha->value.GetString(), sha->value.GetStringLength() };
+				if (lastCommitSha == shaStr) {
+					lastCommitIterator = commits.begin() + index;
+					break;
+				}
+				index += 1;
+			}
+
+			if (lastCommitIterator == commits.begin()) {
+				//no new commits
+				return;
+			}
+
+			SleepyDiscord::Embed embed;
+
+			//since the commits are sorted newest first, we need to go backwards to make it
+			//fit Discord's message order being oldest first/top.
+			for (
+				auto commit = lastCommitIterator - 1;
+				commit != commits.begin();
+				commit -= 1
+			) {
+				auto sha = commit->FindMember("sha");
+				if (sha == commit->MemberEnd() || !sha->value.IsString()) {
+					continue;
+				}
+				auto data = commit->FindMember("commit");
+				if (data == commit->MemberEnd() || !data->value.IsObject()) {
+					continue;
+				}
+				auto message = data->value.FindMember("message");
+				if (message == commit->MemberEnd() || !message->value.IsString()) {
+					continue;
+				}
+				embed.fields.push_back(SleepyDiscord::EmbedField{
+					std::string {
+						sha->value.GetString(),
+						sha->value.GetStringLength() <= 9 ?
+							sha->value.GetStringLength(): 9
+					},
+					std::string {
+						message->value.GetString(),
+						message->value.GetStringLength()
+					}
+				});
+
+				//check if we are over the embed limits
+				//to do list the embed limits in the library
+				if (25 <= embed.fields.size()) {
+					client.sendMessage(channel, "", embed, false, SleepyDiscord::Async);
+					embed = SleepyDiscord::Embed{};
+				}
+			}
+
+			lastCommitSha = std::string {
+				commits.begin()->GetString(),
+				commits.Begin()->GetStringLength()
+			};
+
+			client.sendMessage(channel, "", embed, false, SleepyDiscord::Async);
+		});
+	}
+
+	const time_t oneDayInMilliseconds = 86400000;
+	std::string lastCommitSha;
+	const std::string repoCommitsLink =
+		"https://api.github.com/repositories/54995014/commits";
+};
+
 //Discord client code
 class WaifuClient;
 

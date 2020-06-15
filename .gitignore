@@ -1,6 +1,7 @@
 output-site
 tsc-output
 discord-bot/out
+discord-bot/build
 discord-bot/DiscordToken.txt
 discord-bot/.vs
 
