@@ -189,6 +189,14 @@ public:
 		updateSearchTree();
 	}
 	
+	void onServer(SleepyDiscord::Server server) override {
+		serverCount += 1;
+	}
+
+	void onDeleteServer(SleepyDiscord::UnavailableServer server) override {
+		serverCount -= 1;
+	}
+
 	void onMessage(SleepyDiscord::Message message) override {
 		if (message.isMentioned(getID()) || message.startsWith("whcg "))
 		{
@@ -246,7 +254,7 @@ public:
 	}
 
 	void updateSearchTree() {
-		hasSearchTree = false;
+		//note this is blocking, so the whole bot stops while getting this data
 		rapidjson::Document newSearchTree;
 		auto response = cpr::Get(
 			cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/search-tree.json" });
@@ -259,11 +267,25 @@ public:
 			return;
 
 		searchTree = std::move(newSearchTree);
-		hasSearchTree = true;
 	}
+
+	const rapidjson::Document& getSearchTree() {
+		return searchTree;
+	}
+
+	const SleepyDiscord::Embed getStatus() {
+		SleepyDiscord::Embed status;
+		//to do use some template tuple magic
+		status.fields.emplace_back("Server Count",
+			std::to_string(serverCount), true);
+		return status;
+	}
+
 private:
-	bool hasSearchTree = false;
 	rapidjson::Document searchTree;
+	
+	//server status
+	int serverCount = 0;
 };
 
 int main() {
@@ -279,6 +301,8 @@ int main() {
 		tokenFile.get<std::string::value_type>(&token[0]);
 		trim(token);
 	}
+
+	//to do add a on any message array of actions to do
 
 	Command::addCommand({
 		"help", {}, [](
@@ -328,6 +352,16 @@ int main() {
 	});
 
 	Command::addCommand({
+		"status", {}, [](
+			WaifuClient& client,
+			SleepyDiscord::Message& message,
+			std::queue<std::string>& params
+		) {
+			client.sendMessage(message.channelID, "", client.getStatus(), SleepyDiscord::Async);
+		}
+	});
+
+	Command::addCommand({
 		"legal", {"waifu's name"}, [](
 			WaifuClient& client,
 			SleepyDiscord::Message& message,
@@ -364,8 +398,6 @@ int main() {
 						"You can add them by following this link: "
 						"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>";
 					const auto failure = [=, &client]() {
-						client.sendMessage(message.channelID,
-					client.sendMessage(message.channelID, 
 						client.sendMessage(message.channelID,
 							messageStart + messageEnd,
 							SleepyDiscord::Async);
