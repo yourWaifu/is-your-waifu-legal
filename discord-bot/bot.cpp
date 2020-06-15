@@ -385,10 +385,19 @@ int main() {
 						std::string{ appearence->value.GetString(), appearence->value.GetStringLength() }, true });
 
 				auto ageInShow = document.FindMember("age-in-show");
-				if (ageInShow != document.MemberEnd() && ageInShow->value.IsInt())
-					embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
-						std::to_string(ageInShow->value.GetInt()), true });
+				if (ageInShow != document.MemberEnd()) {
+					const auto addAgeInStory = [&embed](std::string& value) {
+						embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
+							value, true });
+					};
 
+					if (ageInShow->value.IsInt()) {
+						addAgeInStory(std::to_string(ageInShow->value.GetInt()));
+					} else if (ageInShow->value.IsString()) {
+						addAgeInStory(std::string{ ageInShow->value.GetString(), ageInShow->value.GetStringLength() });
+					}
+				}
+					
 				auto image = document.FindMember("image");
 				if (image != document.MemberEnd() && image->value.IsString())
 					embed.image.url = std::string{ image->value.GetString(), image->value.GetStringLength() };
