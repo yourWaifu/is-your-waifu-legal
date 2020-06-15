@@ -355,12 +355,106 @@ int main() {
 					cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/waifus/" +
 					waifuName + ".json" });
 
-				if (response.status_code != 200)
+				std::string topMessage;
+
+				if (response.status_code != 200) {
+					const std::string messageStart =
+						"Couldn't find the waifu you requested.\n";
+					const std::string messageEnd =
+						"You can add them by following this link: "
+						"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>";
+					const auto failure = [=, &client]() {
+						client.sendMessage(message.channelID,
 					client.sendMessage(message.channelID, 
-					"Couldn't find the waifu you requested.\n"
-					"You can add them by following this link: "
-					"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>",
-					SleepyDiscord::Async);
+						client.sendMessage(message.channelID,
+							messageStart + messageEnd,
+							SleepyDiscord::Async);
+					};
+
+					//use the search tree to get predictions on what the user wanted
+					const auto& searchTree = client.getSearchTree();
+					if (searchTree.HasParseError())
+						return failure();
+					
+					const auto searchRootIterator = searchTree.FindMember("root");
+					if (searchRootIterator == searchTree.MemberEnd() || !searchRootIterator->value.IsObject())
+						return failure();
+
+					const auto& searchRootValue = searchRootIterator->value;
+					auto childrenIterator = searchRootValue.FindMember("c"/*children*/);
+					if (childrenIterator == searchRootValue.MemberEnd() || !childrenIterator->value.IsObject())
+						return failure();
+
+					auto& childrenValue = childrenIterator->value;
+					const auto allKeysIterator = searchTree.FindMember("allKeys");
+					if (allKeysIterator == searchTree.MemberEnd() || !allKeysIterator->value.IsArray())
+						return failure();
+
+					size_t letterIndex = 0;
+					auto position = searchRootIterator;
+					for (const std::string::value_type& letter : waifuName) {
+						const auto branches = position->value.FindMember("c"/*children*/);
+						if (branches == position->value.MemberEnd())
+							break;
+						rapidjson::Value letterValue;
+						letterValue.SetString(&letter, 1);
+						auto nextPosition = branches->value.FindMember(letterValue);
+						if (nextPosition == branches->value.MemberEnd() || nextPosition->value.IsNull())
+							break;
+
+						position = nextPosition;
+						letterIndex += 1;
+					}
+					
+					auto topPredictionIterator = position->value.FindMember("v"/*value*/);
+					if (topPredictionIterator == position->value.MemberEnd() ||
+						!topPredictionIterator->value.IsInt() || letterIndex == 0)
+						return failure();
+
+					const nonstd::string_view lettersInCommonAtStart{
+						waifuName.c_str(), letterIndex
+					};
+					const int maxNumOfPredictions = 5;
+					int topPrediction = topPredictionIterator->value.GetInt();
+					std::vector<std::string> topPredictions;
+					topPredictions.reserve(maxNumOfPredictions);
+					
+					const auto allKeys = allKeysIterator->value.GetArray();
+					for (int i = 0; i < maxNumOfPredictions; i += 1) {
+						int index = topPrediction + i;
+						if (allKeys.Size() < index)
+							break; //out of range
+						const auto& prediction = allKeys.operator[](index);
+						//check if it starts with letters in common
+						if (prediction.GetStringLength() < letterIndex)
+							//too small
+							break;
+						if (nonstd::string_view{ prediction.GetString(), letterIndex } ==
+							lettersInCommonAtStart)
+						{
+							topPredictions.emplace_back(prediction.GetString(), prediction.GetStringLength());
+						}
+					}
+					
+					std::string didYouMeanMessage = "Did you mean: \n";
+					size_t messageLength = messageStart.length();
+					messageLength += didYouMeanMessage.length();
+					for (std::string& prediction : topPredictions) {
+						messageLength += prediction.length() + 1/*\n*/;
+					}
+					messageLength += messageEnd.length();
+					topMessage.reserve(topMessage.length() + messageLength);
+					topMessage += messageStart;
+					topMessage += didYouMeanMessage;
+					for (std::string& prediction : topPredictions) {
+						topMessage += prediction;
+						topMessage += '\n';
+					}
+					topMessage += messageEnd;
+
+					client.sendMessage(message.channelID, topMessage, SleepyDiscord::Async);
+					return;
+				}
 
 				rapidjson::Document document;
 				document.Parse(response.text.c_str(), response.text.length());
@@ -404,7 +498,7 @@ int main() {
 
 				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
 
-				client.sendMessage(message.channelID, "", embed, SleepyDiscord::Async);
+				client.sendMessage(message.channelID, topMessage, embed, SleepyDiscord::Async);
 			});
 		}
 	});
