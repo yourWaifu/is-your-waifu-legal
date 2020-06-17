@@ -156,10 +156,10 @@ private:
 		});
 	}
 
-	const time_t oneDayInMilliseconds = /*86400000*/60000;
+	const time_t oneDayInMilliseconds = 86400000;
 	std::string lastCommitSha;
 	const std::string repoCommitsLink =
-		/*"https://api.github.com/repositories/54995014/commits"*/ "https://api.github.com/repositories/173533646/commits";
+		"https://api.github.com/repositories/54995014/commits";
 };
 
 //Discord client code
