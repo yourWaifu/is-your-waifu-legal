@@ -141,9 +141,15 @@ private:
 				}
 			}
 
+			auto lastCommitShaValue = commits[0].FindMember("sha");
+			if (
+				lastCommitShaValue == commits[0].MemberEnd() ||
+				!lastCommitShaValue->value.IsString()
+			)
+				return;
 			lastCommitSha = std::string {
-				commits.begin()->GetString(),
-				commits.Begin()->GetStringLength()
+				lastCommitShaValue->value.GetString(),
+				lastCommitShaValue->value.GetStringLength()
 			};
 
 			client.sendMessage(channel, "", embed, false, SleepyDiscord::Async);
