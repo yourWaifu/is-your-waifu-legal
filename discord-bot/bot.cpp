@@ -150,10 +150,10 @@ private:
 		});
 	}
 
-	const time_t oneDayInMilliseconds = 86400000;
+	const time_t oneDayInMilliseconds = /*86400000*/60000;
 	std::string lastCommitSha;
 	const std::string repoCommitsLink =
-		"https://api.github.com/repositories/54995014/commits";
+		/*"https://api.github.com/repositories/54995014/commits"*/ "https://api.github.com/repositories/173533646/commits";
 };
 
 //Discord client code
@@ -187,6 +187,10 @@ public:
 		SleepyDiscord::DiscordClient(token, SleepyDiscord::USER_CONTROLED_THREADS)
 	{
 		updateSearchTree();
+	}
+
+	void onReady(SleepyDiscord::Ready ready) override {
+		discordAPIDocsRepoWatcher.start(*this);
 	}
 	
 	void onServer(SleepyDiscord::Server server) override {
@@ -283,6 +287,7 @@ public:
 
 private:
 	rapidjson::Document searchTree;
+	DiscordAPIDocsRepoWatcher discordAPIDocsRepoWatcher;
 	
 	//server status
 	int serverCount = 0;
