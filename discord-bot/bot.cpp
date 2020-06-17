@@ -106,7 +106,7 @@ private:
 			//fit Discord's message order being oldest first/top.
 			for (
 				auto commit = lastCommitIterator - 1;
-				commit != commits.begin();
+				commit != commits.begin() - 1; //sub 1 as begin() is valid
 				commit -= 1
 			) {
 				auto sha = commit->FindMember("sha");
