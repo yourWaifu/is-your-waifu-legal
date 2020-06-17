@@ -428,7 +428,6 @@ int main() {
 					if (childrenIterator == searchRootValue.MemberEnd() || !childrenIterator->value.IsObject())
 						return failure();
 
-					auto& childrenValue = childrenIterator->value;
 					const auto allKeysIterator = searchTree.FindMember("allKeys");
 					if (allKeysIterator == searchTree.MemberEnd() || !allKeysIterator->value.IsArray())
 						return failure();
@@ -523,7 +522,7 @@ int main() {
 
 				auto ageInShow = document.FindMember("age-in-show");
 				if (ageInShow != document.MemberEnd()) {
-					const auto addAgeInStory = [&embed](std::string& value) {
+					const auto addAgeInStory = [&embed](std::string value) {
 						embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
 							value, true });
 					};
