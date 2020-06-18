@@ -368,7 +368,7 @@ int main() {
 			SleepyDiscord::Message& message,
 			std::queue<std::string>& params
 		) {
-			client.sendMessage(message.channelID, "", client.getStatus(), SleepyDiscord::Async);
+			client.sendMessage(message.channelID, "", client.getStatus(), false, SleepyDiscord::Async);
 		}
 	});
 
@@ -540,7 +540,7 @@ int main() {
 
 				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
 
-				client.sendMessage(message.channelID, topMessage, embed, SleepyDiscord::Async);
+				client.sendMessage(message.channelID, topMessage, embed, false, SleepyDiscord::Async);
 			});
 		}
 	});
