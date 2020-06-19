@@ -1,15 +1,11 @@
+#include <unordered_set>
+
 #include "sleepy_discord/sleepy_discord.h"
 #include "IO_file.h"
 
 //bolderplate code
 bool startsWith(const std::string& target, const std::string& test) {
 	return target.compare(0, test.size(), test) == 0;
-}
-
-static inline void trim(std::string& s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-		return !std::isspace(ch);
-		}).base(), s.end());
 }
 
 std::queue<std::string> split(const std::string& source) {
@@ -136,7 +132,9 @@ private:
 				//check if we are over the embed limits
 				//to do list the embed limits in the library
 				if (25 <= embed.fields.size()) {
-					client.sendMessage(channel, "", embed, false, SleepyDiscord::Async);
+					client.sendMessage(channel, "", embed,
+						SleepyDiscord::DiscordClient::TTS::Default,
+						SleepyDiscord::Async);
 					embed = SleepyDiscord::Embed{};
 				}
 			}
@@ -152,7 +150,9 @@ private:
 				lastCommitShaValue->value.GetStringLength()
 			};
 
-			client.sendMessage(channel, "", embed, false, SleepyDiscord::Async);
+			client.sendMessage(channel, "", embed,
+				SleepyDiscord::DiscordClient::TTS::Default,
+				SleepyDiscord::Async);
 		});
 	}
 
@@ -190,21 +190,40 @@ namespace Command {
 class WaifuClient : public SleepyDiscord::DiscordClient {
 public:
 	WaifuClient(const std::string token) :
-		SleepyDiscord::DiscordClient(token, SleepyDiscord::USER_CONTROLED_THREADS)
+		SleepyDiscord::DiscordClient(token, SleepyDiscord::USER_CONTROLED_THREADS),
+		botStatusReporter(*this)
 	{
 		updateSearchTree();
 	}
 
+	void addServerID(SleepyDiscord::Snowflake<SleepyDiscord::Server>& serverID) {
+		if (serverIDs.count(serverID) <= 0)
+				serverIDs.insert(serverID);
+	}
+
 	void onReady(SleepyDiscord::Ready ready) override {
 		discordAPIDocsRepoWatcher.start(*this);
+
+		//set up serverIDs
+		for (SleepyDiscord::UnavailableServer& server : ready.servers) {
+			addServerID(server.ID);
+		}
+		if (!botsToken.empty() && !topToken.empty())
+			botStatusReporter.start();
 	}
 	
 	void onServer(SleepyDiscord::Server server) override {
-		serverCount += 1;
+		addServerID(server.ID);
 	}
 
 	void onDeleteServer(SleepyDiscord::UnavailableServer server) override {
-		serverCount -= 1;
+		if (
+			0 < serverIDs.count(server.ID) &&
+			server.unavailable == 
+				SleepyDiscord::UnavailableServer::AvailableFlag::NotSet
+		) {
+			serverIDs.erase(server.ID);
+	}
 	}
 
 	void onMessage(SleepyDiscord::Message message) override {
@@ -283,34 +302,175 @@ public:
 		return searchTree;
 	}
 
+	inline const int getServerCount() {
+		return serverIDs.size();
+	}
+
 	const SleepyDiscord::Embed getStatus() {
 		SleepyDiscord::Embed status;
 		//to do use some template tuple magic
 		status.fields.emplace_back("Server Count",
-			std::to_string(serverCount), true);
+			std::to_string(getServerCount()), true);
 		return status;
+	}
+
+	struct StatusData {
+		int serverCount = 0;
+		std::string& botsToken;
+		std::string& topToken;
+	};
+
+	const StatusData getStatusData() {
+		//add token data here
+		return StatusData {
+			getServerCount(),
+			botsToken, topToken
+		};
+	}
+
+	void setTokens(rapidjson::Document& tokenDoc) {
+		auto tokenIterator = tokenDoc.FindMember("bots-ggToken");
+		if (
+			tokenIterator != tokenDoc.MemberEnd() &&
+			tokenIterator->value.IsString()
+		) {
+			botsToken.assign(
+				tokenIterator->value.GetString(),
+				tokenIterator->value.GetStringLength());
+		} else {
+			std::cout << "bots-gg token not found\n";
+		}
+
+		//to do remove dup code
+		tokenIterator = tokenDoc.FindMember("top-ggToken");
+		if (
+			tokenIterator != tokenDoc.MemberEnd() &&
+			tokenIterator->value.IsString()
+		) {
+			topToken.assign(
+				tokenIterator->value.GetString(),
+				tokenIterator->value.GetStringLength());
+		} else {
+			std::cout << "top-gg token not found\n";
+		}
 	}
 
 private:
 	rapidjson::Document searchTree;
 	DiscordAPIDocsRepoWatcher discordAPIDocsRepoWatcher;
 	
-	//server status
-	int serverCount = 0;
+	//Discord Bot status poster
+	std::string botsToken;
+	std::string topToken;
+
+	class BotStatusReporter {
+	public:
+		BotStatusReporter(WaifuClient& _client) :
+			client(_client)
+		{
+			
+		}
+
+		void start() {
+			postStatus();
+		}
+
+		void postStatus() {
+			asio::post([this]() {
+				const StatusData data = client.getStatusData();
+
+				{
+					rapidjson::Document json;
+					json.SetObject();
+					rapidjson::Value guildCount;
+					guildCount.SetInt(data.serverCount);
+					json.AddMember("guildCount", guildCount, json.GetAllocator());
+
+					rapidjson::StringBuffer buffer;
+					rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+					json.Accept(writer);
+
+					std::string postStatsLink = "https://discord.bots.gg/api/v1/bots/186151807699910656/stats";
+					auto response = cpr::Post(
+						cpr::Url{ postStatsLink },
+						cpr::Header{
+							{ "Content-Type", "application/json" },
+							{ "Authorization", data.botsToken }
+						},
+						cpr::Body{ buffer.GetString(), buffer.GetSize() }
+					);
+				}
+				
+				//to do remove dup code
+				{
+					rapidjson::Document json;
+					json.SetObject();
+					rapidjson::Value guildCount;
+					guildCount.SetInt(data.serverCount);
+					json.AddMember("server_count", guildCount, json.GetAllocator());
+
+					rapidjson::StringBuffer buffer;
+					rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+					json.Accept(writer);
+
+					std::string postStatsLink = "https://top.gg/api/bots/186151807699910656/stats";
+					auto response = cpr::Post(
+						cpr::Url{ postStatsLink },
+						cpr::Header{
+							{ "Content-Type", "application/json" },
+							{ "Authorization", data.topToken }
+						},
+						cpr::Body{ buffer.GetString(), buffer.GetSize() }
+					);
+				}
+
+				const time_t postInterval = 300000; //5 mins
+				client.schedule([this]() {
+					postStatus();
+				}, postInterval);
+			});
+		}
+
+		WaifuClient& client;
+	};
+	BotStatusReporter botStatusReporter;
+
+	//to do add language options for each server
+	std::unordered_set<
+		SleepyDiscord::Snowflake<SleepyDiscord::Server>::RawType
+	> serverIDs;
 };
 
 int main() {
+	rapidjson::Document tokenDoc;
 	std::string token;
 	{
-		File tokenFile("DiscordToken.txt");
+		std::string tokenJSON;
+		File tokenFile("tokens.json");
 		const std::size_t tokenSize = tokenFile.getSize();
 		if (tokenSize == static_cast<std::size_t>(-1)) {
-			std::cout << "Error: Can't find DiscordToken.txt\n";
+			std::cout << "Error: Can't find tokens.json\n";
 			return 1;
 		}
-		token.resize(tokenSize);
-		tokenFile.get<std::string::value_type>(&token[0]);
-		trim(token);
+		tokenJSON.resize(tokenSize);
+		tokenFile.get<std::string::value_type>(&tokenJSON[0]);
+		tokenDoc.Parse(tokenJSON.c_str(), tokenJSON.length());
+		if (tokenDoc.HasParseError()) {
+			std::cout << "Error: Couldn't parse tokens.json\n";
+			return 1;
+		}
+		
+		auto tokenIterator = tokenDoc.FindMember("discordToken");
+		if (
+			tokenIterator == tokenDoc.MemberEnd() &&
+			tokenIterator->value.IsString()
+		) {
+			std::cout << "Error: Can't find discordToken in tokens.json\n";
+			return 1;
+		}
+		token.assign(
+			tokenIterator->value.GetString(),
+			tokenIterator->value.GetStringLength());
 	}
 
 	//to do add a on any message array of actions to do
@@ -368,7 +528,9 @@ int main() {
 			SleepyDiscord::Message& message,
 			std::queue<std::string>& params
 		) {
-			client.sendMessage(message.channelID, "", client.getStatus(), false, SleepyDiscord::Async);
+			client.sendMessage(message.channelID, "", client.getStatus(),
+			SleepyDiscord::DiscordClient::TTS::Default,
+			SleepyDiscord::Async);
 		}
 	});
 
@@ -540,7 +702,9 @@ int main() {
 
 				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
 
-				client.sendMessage(message.channelID, topMessage, embed, false, SleepyDiscord::Async);
+				client.sendMessage(message.channelID, topMessage, embed,
+				SleepyDiscord::DiscordClient::TTS::Default,
+				SleepyDiscord::Async);
 			});
 		}
 	});
@@ -548,5 +712,6 @@ int main() {
 	Command::defaultCommand = &(Command::all.at("legal"));
 
 	WaifuClient client(token);
+	client.setTokens(tokenDoc);
 	client.run();
 }
