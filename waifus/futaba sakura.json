@@ -1,11 +1,11 @@
 {
 	"type" : 0,
-	"english-name" : "Futaba Sakura",
-	"image" : "https://vignette.wikia.nocookie.net/megamitensei/images/9/95/P5_Futaba_Sakura.png",
-	"japanese-name" : "佐倉 双葉, ナビ",
+	"english-name" : "Emilia",
+	"image" : "https://vignette.wikia.nocookie.net/rezero/images/f/fb/Emilia_Character_Art_2.jpg/revision/latest?cb=20170508164143",
+	"japanese-name" : "エミリア",
 	"year" : 2001,
-	"month" : 2,
-	"day-of-month" : 19,
-	"age-in-show": 16,
+	"month" : 9,
+	"day-of-month" : 23,
+	"age-in-show": 19,
 	"sources" : ["https://megamitensei.fandom.com/wiki/Futaba_Sakura"]
 }
