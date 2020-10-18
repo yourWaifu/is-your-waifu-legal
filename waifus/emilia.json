@@ -1,0 +1,11 @@
+{
+	"type" : 0,
+	"english-name" : "Emilia",
+	"image" : "https://vignette.wikia.nocookie.net/p__/images/6/60/Emilia_Infobox.png/revision/latest?cb=20200812110513&path-prefix=protagonist",
+	"japanese-name" : "エミリア",
+	"month" : 9,
+	"day-of-month" : 23,
+	"age-in-show": 19,
+	"notes": ["Was frozen for about 100 years, but still takes the same physical appearence"],
+	"sources" : ["https://rezero.fandom.com/wiki/Emilia"]
+}
