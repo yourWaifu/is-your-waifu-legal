@@ -12,6 +12,13 @@
             "outFiles": [
                 "${workspaceFolder}/tsc-output/**/*.js"
             ]
+        },
+        {
+            "name": "Launch Discord Bot",
+            "request":"launch",
+            "type":"cppdbg",
+            "program":"${workspaceRoot}/discord-bot/build/waifu-bot",
+            "cwd":"${workspaceRoot}/discord-bot/build/"
         }
     ]
 }

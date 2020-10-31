@@ -28,12 +28,20 @@ class DiscordAPIDocsRepoWatcher {
 public:
 	void pollTomarrow(SleepyDiscord::DiscordClient& client) {
 		client.schedule([=, &client]() {
+			client.sendMessage("466386704438132736", "poll repo", SleepyDiscord::Async);
 			pollImplementation(client);
 			pollTomarrow(client);
 		}, oneDayInMilliseconds);
 	}
 
+	const bool started() {
+		return !lastCommitSha.empty();
+	}
+
 	void start(SleepyDiscord::DiscordClient& client) {
+		if (started())
+			return;
+
 		asio::post([=, &client]() {
 			//get lastCommitSha
 			//to do this code is used twice, make it a function
@@ -109,49 +117,73 @@ private:
 				if (sha == commit->MemberEnd() || !sha->value.IsString()) {
 					continue;
 				}
+
+				if (commit == commits.begin()) {
+					lastCommitSha = std::string {
+						sha->value.GetString(),
+						sha->value.GetStringLength()
+					};
+				}
+
 				auto data = commit->FindMember("commit");
 				if (data == commit->MemberEnd() || !data->value.IsObject()) {
 					continue;
 				}
-				auto message = data->value.FindMember("message");
-				if (message == commit->MemberEnd() || !message->value.IsString()) {
+				auto messageMember = data->value.FindMember("message");
+				if (messageMember == data->value.MemberEnd() || !messageMember->value.IsString()) {
 					continue;
 				}
+				auto htmlLinkMember = commit->FindMember("html_url");
+				if (htmlLinkMember == commit->MemberEnd() || !htmlLinkMember->value.IsString()) {
+					continue;
+				}
+
+				std::string hashDisplay {
+					sha->value.GetString(),
+					sha->value.GetStringLength() <= 9 ?
+						sha->value.GetStringLength(): 9
+				};
+
+				std::string message {
+					messageMember->value.GetString(),
+					messageMember->value.GetStringLength()
+				};
+
+				std::string commitTitle;
+				size_t newLinePOS = message.find_first_of('\n');
+				if (newLinePOS == std::string::npos) {
+					commitTitle = message;
+				} else {
+					commitTitle = message.substr(0, newLinePOS);
+				}
+
+				std::string commitLink;
+				size_t linkSize =
+					1 + hashDisplay.length() + 2 +
+					htmlLinkMember->value.GetStringLength() + 1;
+				commitLink += '[';
+				commitLink += hashDisplay;
+				commitLink += "](";
+				commitLink += htmlLinkMember->value.GetString();
+				commitLink += ')';
+
 				embed.fields.push_back(SleepyDiscord::EmbedField{
-					std::string {
-						sha->value.GetString(),
-						sha->value.GetStringLength() <= 9 ?
-							sha->value.GetStringLength(): 9
-					},
-					std::string {
-						message->value.GetString(),
-						message->value.GetStringLength()
-					}
+					commitTitle,
+					commitLink
 				});
 
 				//check if we are over the embed limits
 				//to do list the embed limits in the library
 				if (25 <= embed.fields.size()) {
 					client.sendMessage(channel, "", embed,
-						SleepyDiscord::DiscordClient::TTS::Default,
+						SleepyDiscord::TTS::Default,
 						SleepyDiscord::Async);
 					embed = SleepyDiscord::Embed{};
 				}
 			}
 
-			auto lastCommitShaValue = commits[0].FindMember("sha");
-			if (
-				lastCommitShaValue == commits[0].MemberEnd() ||
-				!lastCommitShaValue->value.IsString()
-			)
-				return;
-			lastCommitSha = std::string {
-				lastCommitShaValue->value.GetString(),
-				lastCommitShaValue->value.GetStringLength()
-			};
-
 			client.sendMessage(channel, "", embed,
-				SleepyDiscord::DiscordClient::TTS::Default,
+				SleepyDiscord::TTS::Default,
 				SleepyDiscord::Async);
 		});
 	}
@@ -202,14 +234,17 @@ public:
 	}
 
 	void onReady(SleepyDiscord::Ready ready) override {
+		static bool isFirstTime = true;
 		discordAPIDocsRepoWatcher.start(*this);
 
 		//set up serverIDs
 		for (SleepyDiscord::UnavailableServer& server : ready.servers) {
 			addServerID(server.ID);
 		}
-		if (!botsToken.empty() && !topToken.empty())
+		if (!botsToken.empty() && !topToken.empty() && isFirstTime)
 			botStatusReporter.start();
+
+		isFirstTime = false;
 	}
 	
 	void onServer(SleepyDiscord::Server server) override {
@@ -391,7 +426,7 @@ private:
 					json.Accept(writer);
 
 					std::string postStatsLink = "https://discord.bots.gg/api/v1/bots/186151807699910656/stats";
-					auto response = cpr::Post(
+					cpr::Post(
 						cpr::Url{ postStatsLink },
 						cpr::Header{
 							{ "Content-Type", "application/json" },
@@ -414,7 +449,7 @@ private:
 					json.Accept(writer);
 
 					std::string postStatsLink = "https://top.gg/api/bots/186151807699910656/stats";
-					auto response = cpr::Post(
+					cpr::Post(
 						cpr::Url{ postStatsLink },
 						cpr::Header{
 							{ "Content-Type", "application/json" },
@@ -529,7 +564,7 @@ int main() {
 			std::queue<std::string>& params
 		) {
 			client.sendMessage(message.channelID, "", client.getStatus(),
-			SleepyDiscord::DiscordClient::TTS::Default,
+			SleepyDiscord::TTS::Default,
 			SleepyDiscord::Async);
 		}
 	});
@@ -626,7 +661,7 @@ int main() {
 					const auto allKeys = allKeysIterator->value.GetArray();
 					for (int i = 0; i < maxNumOfPredictions; i += 1) {
 						int index = topPrediction + i;
-						if (allKeys.Size() < index)
+						if (allKeys.Size() <= index)
 							break; //out of range
 						const auto& prediction = allKeys.operator[](index);
 						//check if it starts with letters in common
@@ -703,7 +738,7 @@ int main() {
 				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
 
 				client.sendMessage(message.channelID, topMessage, embed,
-				SleepyDiscord::DiscordClient::TTS::Default,
+				SleepyDiscord::TTS::Default,
 				SleepyDiscord::Async);
 			});
 		}
