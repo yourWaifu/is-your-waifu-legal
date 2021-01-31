@@ -1,3 +1,5 @@
+[Español](README-esp.md) 
+
 # [Is This Waifu Legal](https://yourwaifu.dev/is-your-waifu-legal/)
 
 It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some people (Not us), have issues with lolis in NSFW stuff, which is why this tool exist. This tool's purpose is to make it easy to calculate the **current** age of a waifu.
