@@ -3,10 +3,10 @@
 	"english-name" : "Asuka Langley Sohryu",
 	"image" : "https://static.wikia.nocookie.net/evangelion/images/d/d0/Asuka_Langley_Sohryu_%28Plugsuit%29.png",
 	"japanese-name" : "惣流・アスカ・ラングレー",
-        "age-in-show": 14,
-        "year": 2001
-        "month": 12,
-        "day-of-month": 4
+       "age-in-show": 14,
+       "year": 2001,
+       "month": 12,
+       "day-of-month": 4,
 	"notes": ["in Rebuild she is biologically twenty-eight years old although is not the same Asuka at all"],
 	"sources" : ["https://evangelion.fandom.com/wiki/Asuka_Langley_Sohryu", "https://en.wikipedia.org/wiki/Asuka_Langley_Soryu"]
 }
