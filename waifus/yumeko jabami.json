@@ -4,5 +4,8 @@
 	"image" : "https://static.wikia.nocookie.net/kakegurui/images/e/e8/Yumeko_full_body.png",
 	"japanese-name" : "蛇喰 夢子",
 	"age-range-by-appearance": [16, 17],
+ 	"age-group-by-appearance": "teenager",
+	"definitely-legal": false,
+ 	"is-a-trap": false,
 	"sources" : ["https://anilist.co/character/121889/Yumeko-Jabami", "https://kakegurui.fandom.com/wiki/Yumeko_Jabami"]
 }
