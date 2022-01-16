@@ -175,16 +175,20 @@ private:
 				//check if we are over the embed limits
 				//to do list the embed limits in the library
 				if (25 <= embed.fields.size()) {
-					client.sendMessage(channel, "", embed,
-						SleepyDiscord::TTS::Default,
-						SleepyDiscord::Async);
+					SleepyDiscord::SendMessageParams messageToSend;
+					messageToSend.channelID = channel;
+					messageToSend.embed = embed;
+
+					client.sendMessage(messageToSend, SleepyDiscord::Async);
 					embed = SleepyDiscord::Embed{};
 				}
 			}
 
-			client.sendMessage(channel, "", embed,
-				SleepyDiscord::TTS::Default,
-				SleepyDiscord::Async);
+			SleepyDiscord::SendMessageParams messageToSend;
+			messageToSend.channelID = channel;
+			messageToSend.embed = embed;
+
+			client.sendMessage(messageToSend, SleepyDiscord::Async);
 		});
 	}
 
@@ -201,13 +205,16 @@ namespace Command {
 	using Verb = std::function<
 		void(
 			WaifuClient&,
-			SleepyDiscord::Message&,
-			std::queue<std::string>&
+			SleepyDiscord::Interaction&
 			)
 	>;
+	using CreateAppCommandAction = std::function<
+		void(WaifuClient&, SleepyDiscord::AppCommand&)>;
 	struct Command {
 		std::string name;
+		std::string description;
 		std::vector<std::string> params;
+		CreateAppCommandAction createAppCommand;
 		Verb verb;
 	};
 	using MappedCommands = std::unordered_map<std::string, Command>;
@@ -244,6 +251,19 @@ public:
 		if (!botsToken.empty() && !topToken.empty() && isFirstTime)
 			botStatusReporter.start();
 
+		//handle slash commands
+		if (isFirstTime) {
+			std::vector<SleepyDiscord::AppCommand> commands{ Command::all.size() };
+			for (const auto& command : Command::all) {
+				SleepyDiscord::AppCommand appCommand;
+				appCommand.name = command.first;
+				appCommand.description = command.second.description;
+				appCommand.applicationID = getID().string();
+				command.second.createAppCommand(*this, appCommand);
+				createGlobalAppCommand(getID().string(), appCommand.name, appCommand.description, std::move(appCommand.options), SleepyDiscord::Async);
+			}
+		}
+
 		isFirstTime = false;
 	}
 	
@@ -258,62 +278,79 @@ public:
 				SleepyDiscord::UnavailableServer::AvailableFlag::NotSet
 		) {
 			serverIDs.erase(server.ID);
+		}
 	}
-	}
 
-	void onMessage(SleepyDiscord::Message message) override {
-		if (message.isMentioned(getID()) || message.startsWith("whcg "))
-		{
-			std::queue<std::string> parameters = split(message.content);
-			const std::string mention = "<@" + getID().string() + ">";
-			const std::string mentionNick = "<@!" + getID().string() + ">";
-			if (
-				!(
-					//only allow if has more then 1 parameter 
-					1 < parameters.size() && (
-						//only allow if starts with a mention
-						parameters.front() == mention || parameters.front() == mentionNick ||
-						//or starts with whcg
-						parameters.front() == "whcg"
-					)
-				)
-			)
+	void onInteraction(SleepyDiscord::Interaction interaction) override {
+		if (interaction.type == SleepyDiscord::Interaction::Type::ApplicationCommandAutocomplete) {
+			if (interaction.data.name != "legal")
 				return;
+			for (auto& option : interaction.data.options) {
+				if (option.name != "waifu-name")
+					return;
+				std::string query;
+				if (!option.get(query))
+					return;
+				std::vector<std::string> prediction = getSearchResults(query);
 
-			//remove the parameters as we go
-			parameters.pop();
-			if (parameters.empty())
-				return;
-
-			//get command
-			Command::MappedCommands::iterator foundCommand =
-				Command::all.find(parameters.front());
-			if (foundCommand == Command::all.end()) {
-				if (Command::defaultCommand != nullptr) {
-					Command::defaultCommand->verb(*this, message, parameters);
-				} else {
-					sendMessage(message.channelID, "Error: Command not found", SleepyDiscord::Async);
+				SleepyDiscord::Interaction::AutocompleteResponse response;
+				for (std::string& result : prediction) {
+					SleepyDiscord::AppCommand::Option::Choice choice;
+					choice.name = result;
+					choice.set<std::string>(result);
+					response.data.choices.push_back(std::move(choice));
 				}
-				return;
+
+				createInteractionResponse(interaction.ID, interaction.token, std::move(response));
 			}
-			parameters.pop();
-			if (
-				parameters.size() <
-				foundCommand->second.params.size()
-				) {
-				sendMessage(message.channelID, "Error: Too few parameters", SleepyDiscord::Async);
+		}
+		else if (interaction.type == SleepyDiscord::Interaction::Type::ApplicationCommand) {
+			Command::MappedCommands::iterator foundCommand =
+				Command::all.find(interaction.data.name);
+			if (foundCommand == Command::all.end()) {
+				SleepyDiscord::Interaction::Response<> response;
+				response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+				response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
+				response.data.content = "Command not found";
+				createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
 				return;
 			}
 
-			//call command
-			foundCommand->second.verb(*this, message, parameters);
-		} 
-		// else if channel is the github updates channel, update search tree
-		else if (message.channelID == "700570024523595786") {
-			//we have the github webhook set up to only send page build updates
-			asio::post([this]() {
-				updateSearchTree();
-			});
+			foundCommand->second.verb(*this, interaction);
+		}
+		else if (interaction.type == SleepyDiscord::Interaction::Type::MessageComponent) {
+			rapidjson::Document document;
+			document.Parse(interaction.data.customID.c_str(), interaction.data.customID.length());
+			if (document.HasParseError())
+				return;
+			auto& command = document.FindMember("c");
+			if (command == document.MemberEnd())
+				return;
+			auto& data = document.FindMember("d");
+			if (data == document.MemberEnd() || !data->value.IsString())
+				return;
+			auto& user = document.FindMember("u");
+			if (user != document.MemberEnd() && user->value.IsString()) {
+				//check that user is the same
+				SleepyDiscord::Snowflake< SleepyDiscord::User> originalUserID(user->value);
+				SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
+				if (!interaction.member.ID.empty())
+					userID = interaction.member.ID;
+				else if (!interaction.user.ID.empty())
+					userID = interaction.user.ID;
+				if (!userID.empty() && originalUserID != userID) {
+					SleepyDiscord::Interaction::Response<> response;
+					response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+					response.data.content = "You aren't the original user";
+					response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
+					createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+					return;
+				}
+			}
+			
+			createLegalInteractionResponse(interaction,
+				std::string{ data->value.GetString(), data->value.GetStringLength() },
+				true);
 		}
 	}
 
@@ -333,8 +370,80 @@ public:
 		searchTree = std::move(newSearchTree);
 	}
 
-	const rapidjson::Document& getSearchTree() {
+	const rapidjson::Document& getSearchTree() const {
 		return searchTree;
+	}
+
+	std::vector<std::string> getSearchResults(const std::string& query) const {
+		//use the search tree to get predictions on what the user wanted
+		const auto& searchTree = getSearchTree();
+		if (searchTree.HasParseError())
+			return {};
+
+		const auto searchRootIterator = searchTree.FindMember("root");
+		if (searchRootIterator == searchTree.MemberEnd() || !searchRootIterator->value.IsObject())
+			return {};
+
+		const auto& searchRootValue = searchRootIterator->value;
+		auto childrenIterator = searchRootValue.FindMember("c"/*children*/);
+		if (childrenIterator == searchRootValue.MemberEnd() || !childrenIterator->value.IsObject())
+			return {};
+
+		const auto allKeysIterator = searchTree.FindMember("allKeys");
+		if (allKeysIterator == searchTree.MemberEnd() || !allKeysIterator->value.IsArray())
+			return {};
+
+		int topPrediction = 0;
+		size_t letterIndex = 0;
+		if (!query.empty()) {
+			auto position = searchRootIterator;
+			for (const std::string::value_type& letter : query) {
+				const auto branches = position->value.FindMember("c"/*children*/);
+				if (branches == position->value.MemberEnd())
+					break;
+				rapidjson::Value letterValue;
+				letterValue.SetString(&letter, 1);
+				auto nextPosition = branches->value.FindMember(letterValue);
+				if (nextPosition == branches->value.MemberEnd() || nextPosition->value.IsNull())
+					break;
+
+				position = nextPosition;
+				letterIndex += 1;
+			}
+
+			auto topPredictionIterator = position->value.FindMember("v"/*value*/);
+			if (topPredictionIterator == position->value.MemberEnd() ||
+				!topPredictionIterator->value.IsInt() || letterIndex == 0)
+				return {};
+			
+			topPrediction = topPredictionIterator->value.GetInt();
+		}
+
+		const nonstd::string_view lettersInCommonAtStart{
+				query.c_str(), letterIndex
+		};
+		const int maxNumOfPredictions = 5;
+		std::vector<std::string> topPredictions;
+		topPredictions.reserve(maxNumOfPredictions);
+
+		const auto allKeys = allKeysIterator->value.GetArray();
+		for (int i = 0; i < maxNumOfPredictions; i += 1) {
+			int index = topPrediction + i;
+			if (allKeys.Size() <= index)
+				break; //out of range
+			const auto& prediction = allKeys.operator[](index);
+			//check if it starts with letters in common
+			if (prediction.GetStringLength() < letterIndex)
+				//too small
+				break;
+			if (nonstd::string_view{ prediction.GetString(), letterIndex } ==
+				lettersInCommonAtStart)
+			{
+				topPredictions.emplace_back(prediction.GetString(), prediction.GetStringLength());
+			}
+		}
+
+		return topPredictions;
 	}
 
 	inline const int getServerCount() {
@@ -388,6 +497,146 @@ public:
 		} else {
 			std::cout << "top-gg token not found\n";
 		}
+	}
+
+	void createLegalInteractionResponse(SleepyDiscord::Interaction& interaction, std::string waifuName, bool updateMessage = false) {
+		if (waifuName.empty())
+			return;
+
+		waifuName = SleepyDiscord::escapeURL(waifuName);
+		makeLowerCaseOnly(waifuName);
+
+		asio::post([&, interaction = std::move(interaction), waifuName = std::move(waifuName), updateMessage = std::move(updateMessage)]() {
+			auto response = cpr::Get(
+				cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/waifus/" +
+				waifuName + ".json" });
+
+			std::string topMessage;
+
+			if (response.status_code != 200) {
+				const std::string messageStart =
+					"Couldn't find the waifu you requested.\n";
+				const std::string messageEnd =
+					"You can add them by following this link: "
+					"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>";
+
+				std::vector<std::string> topPredictions = getSearchResults(waifuName);
+
+				SleepyDiscord::Interaction::Response<> response;
+				response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+
+				if (topPredictions.empty()) {
+					response.data.content = messageStart + messageEnd;
+					response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
+					createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+					return;
+				}
+
+				std::string didYouMeanMessage = "\nDid you mean: \n";
+				//use buttons
+				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+				for (std::string& prediction : topPredictions) {
+					auto button = std::make_shared<SleepyDiscord::Button>();
+					button->style = SleepyDiscord::ButtonStyle::Primary;
+					button->label = prediction;
+					//data to json for button
+					rapidjson::Document json;
+					json.SetObject();
+					json.AddMember("c", "legal", json.GetAllocator());
+					SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
+					if (!interaction.member.ID.empty())
+						userID = interaction.member.ID;
+					else if (!interaction.user.ID.empty())
+						userID = interaction.user.ID;
+					if (!userID.empty()) {
+						const auto& userIDStr = userID.string();
+						json.AddMember("u",
+							rapidjson::Document::StringRefType{ userIDStr.c_str(), userIDStr.size() },
+							json.GetAllocator());
+					}
+					json.AddMember("d",
+						rapidjson::Document::StringRefType{ prediction.c_str(), prediction.size() },
+						json.GetAllocator());
+					button->customID = SleepyDiscord::json::stringify(json);
+
+					actionRow->components.push_back(button);
+				}
+
+				size_t messageLength = messageStart.length();
+				messageLength += messageEnd.length();
+				messageLength += didYouMeanMessage.length();
+				topMessage.clear();
+				topMessage.reserve(topMessage.length() + messageLength);
+				topMessage += messageStart;
+				topMessage += messageEnd;
+				topMessage += didYouMeanMessage;
+
+				response.data.content = topMessage;
+				response.data.components.push_back(actionRow);
+				createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+				return;
+			}
+
+			rapidjson::Document document;
+			document.Parse(response.text.c_str(), response.text.length());
+			if (document.HasParseError())
+				return;
+
+			SleepyDiscord::Embed embed{};
+
+			auto definitelyLegal = document.FindMember("definitely-legal");
+			if (definitelyLegal != document.MemberEnd() && definitelyLegal->value.IsBool())
+				embed.description += definitelyLegal->value.GetBool() ? "Definitely of legal age\n" :
+				"Definitely not of legal age\n";
+
+			auto year = document.FindMember("year");
+			if (year != document.MemberEnd() && year->value.IsInt())
+				embed.fields.push_back(SleepyDiscord::EmbedField{ "Birth Year",
+					std::to_string(year->value.GetInt()), true });
+
+			auto appearence = document.FindMember("age-group-by-appearance");
+			if (appearence != document.MemberEnd() && appearence->value.IsString())
+				embed.fields.push_back(SleepyDiscord::EmbedField{ "Looks like a(n)",
+					std::string{ appearence->value.GetString(), appearence->value.GetStringLength() }, true });
+
+			auto ageInShow = document.FindMember("age-in-show");
+			if (ageInShow != document.MemberEnd()) {
+				const auto addAgeInStory = [&embed](std::string value) {
+					embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
+						value, true });
+				};
+
+				if (ageInShow->value.IsInt()) {
+					addAgeInStory(std::to_string(ageInShow->value.GetInt()));
+				}
+				else if (ageInShow->value.IsString()) {
+					addAgeInStory(std::string{ ageInShow->value.GetString(), ageInShow->value.GetStringLength() });
+				}
+			}
+
+			auto image = document.FindMember("image");
+			if (image != document.MemberEnd() && image->value.IsString())
+				embed.image.url = std::string{ image->value.GetString(), image->value.GetStringLength() };
+
+			embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
+
+			if (updateMessage) {
+				SleepyDiscord::Interaction::EditMessageResponse message;
+				message.data.content = "";
+				message.data.embeds = std::vector<SleepyDiscord::Embed>{};
+				message.data.embeds->push_back(embed);
+				message.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::NONE;
+				message.data.components = std::vector<std::shared_ptr<SleepyDiscord::BaseComponent>>{};
+				createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
+			}
+			else {
+				SleepyDiscord::Interaction::Response<> message;
+				message.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+				message.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::NONE;
+				message.data.embeds.push_back(embed);
+				createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
+			}
+		});
 	}
 
 private:
@@ -511,236 +760,48 @@ int main() {
 	//to do add a on any message array of actions to do
 
 	Command::addCommand({
-		"help", {}, [](
+		"hello", "Says Hello as a test", {},
+		[](WaifuClient& client, SleepyDiscord::AppCommand& appCommand) {
+
+		}, [](
 			WaifuClient& client,
-			SleepyDiscord::Message& message,
-			std::queue<std::string>&
+			SleepyDiscord::Interaction& interaction
 		) {
-			constexpr char start[] = "Here's a list of all commands:```\n";
-			constexpr char theEnd[] = "```";
-			//estimate length
-			std::size_t length = strlen(start) + strlen(theEnd);
-			for (Command::MappedCommand& command : Command::all) {
-				length += command.first.size();
-				length += 2; // ' ' and '\n'
-				for (std::string& parmaName : command.second.params) {
-					length += 2; // '<' and '> '
-					length += parmaName.size();
-				}
-			}
-			
-			std::string output;
-			output.reserve(length);
-			output += start;
-			for (Command::MappedCommand& command : Command::all) {
-				output += command.first;
-				output += ' ';
-				for (std::string& parmaName : command.second.params) {
-					output += '<';
-					output += parmaName;
-					output += "> ";
-				}
-				output += '\n';
-			}
-			output += theEnd;
-			client.sendMessage(message.channelID, output, SleepyDiscord::Async);
+			SleepyDiscord::Interaction::Response<> response;
+			response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+			response.data.content = "Hello";
+			client.createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
 		}
 	});
 
 	Command::addCommand({
-		"hello", {}, [](
+		"legal", "Shows the age of a Waifu", {"waifu's name"}, 
+		[](WaifuClient& client, SleepyDiscord::AppCommand& appCommand) {
+			//create options for command
+			SleepyDiscord::AppCommand::Option option;
+			option.name = "waifu-name";
+			option.description = "looks for the name in the search tree";
+			option.type = SleepyDiscord::AppCommand::Option::TypeHelper<std::string>::getType();
+			option.autocomplete = true;
+			option.isRequired = true;
+			appCommand.options.push_back(std::move(option));
+		}, [](
 			WaifuClient& client,
-			SleepyDiscord::Message& message,
-			std::queue<std::string>& params
+			SleepyDiscord::Interaction& interaction
 		) {
-			client.sendMessage(message.channelID, "Hello, " + message.author.username, SleepyDiscord::Async);
-		}
-	});
-
-	Command::addCommand({
-		"status", {}, [](
-			WaifuClient& client,
-			SleepyDiscord::Message& message,
-			std::queue<std::string>& params
-		) {
-			client.sendMessage(message.channelID, "", client.getStatus(),
-			SleepyDiscord::TTS::Default,
-			SleepyDiscord::Async);
-		}
-	});
-
-	Command::addCommand({
-		"legal", {"waifu's name"}, [](
-			WaifuClient& client,
-			SleepyDiscord::Message& message,
-			std::queue<std::string>& params
-		) {
-			if (params.empty())
+			if (interaction.data.options.empty())
 				return;
 
 			std::string waifuName{};
-			waifuName.reserve(message.content.length());
-
-			while (true) {
-				waifuName += params.front();
-				params.pop();
-				if (!params.empty()) {
-					waifuName += "%20";
-				} else {
-					break;
+			for (auto& option : interaction.data.options) {
+				if (option.name == "waifu-name") {
+					if (!option.get(waifuName)) {
+						return;
+					}
 				}
 			}
-			makeLowerCaseOnly(waifuName);
 
-			asio::post([waifuName, &client, message]() {
-				auto response = cpr::Get(
-					cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/waifus/" +
-					waifuName + ".json" });
-
-				std::string topMessage;
-
-				if (response.status_code != 200) {
-					const std::string messageStart =
-						"Couldn't find the waifu you requested.\n";
-					const std::string messageEnd =
-						"You can add them by following this link: "
-						"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>";
-					const auto failure = [=, &client]() {
-						client.sendMessage(message.channelID,
-							messageStart + messageEnd,
-							SleepyDiscord::Async);
-					};
-
-					//use the search tree to get predictions on what the user wanted
-					const auto& searchTree = client.getSearchTree();
-					if (searchTree.HasParseError())
-						return failure();
-					
-					const auto searchRootIterator = searchTree.FindMember("root");
-					if (searchRootIterator == searchTree.MemberEnd() || !searchRootIterator->value.IsObject())
-						return failure();
-
-					const auto& searchRootValue = searchRootIterator->value;
-					auto childrenIterator = searchRootValue.FindMember("c"/*children*/);
-					if (childrenIterator == searchRootValue.MemberEnd() || !childrenIterator->value.IsObject())
-						return failure();
-
-					const auto allKeysIterator = searchTree.FindMember("allKeys");
-					if (allKeysIterator == searchTree.MemberEnd() || !allKeysIterator->value.IsArray())
-						return failure();
-
-					size_t letterIndex = 0;
-					auto position = searchRootIterator;
-					for (const std::string::value_type& letter : waifuName) {
-						const auto branches = position->value.FindMember("c"/*children*/);
-						if (branches == position->value.MemberEnd())
-							break;
-						rapidjson::Value letterValue;
-						letterValue.SetString(&letter, 1);
-						auto nextPosition = branches->value.FindMember(letterValue);
-						if (nextPosition == branches->value.MemberEnd() || nextPosition->value.IsNull())
-							break;
-
-						position = nextPosition;
-						letterIndex += 1;
-					}
-					
-					auto topPredictionIterator = position->value.FindMember("v"/*value*/);
-					if (topPredictionIterator == position->value.MemberEnd() ||
-						!topPredictionIterator->value.IsInt() || letterIndex == 0)
-						return failure();
-
-					const nonstd::string_view lettersInCommonAtStart{
-						waifuName.c_str(), letterIndex
-					};
-					const int maxNumOfPredictions = 5;
-					int topPrediction = topPredictionIterator->value.GetInt();
-					std::vector<std::string> topPredictions;
-					topPredictions.reserve(maxNumOfPredictions);
-					
-					const auto allKeys = allKeysIterator->value.GetArray();
-					for (int i = 0; i < maxNumOfPredictions; i += 1) {
-						int index = topPrediction + i;
-						if (allKeys.Size() <= index)
-							break; //out of range
-						const auto& prediction = allKeys.operator[](index);
-						//check if it starts with letters in common
-						if (prediction.GetStringLength() < letterIndex)
-							//too small
-							break;
-						if (nonstd::string_view{ prediction.GetString(), letterIndex } ==
-							lettersInCommonAtStart)
-						{
-							topPredictions.emplace_back(prediction.GetString(), prediction.GetStringLength());
-						}
-					}
-					
-					std::string didYouMeanMessage = "Did you mean: \n";
-					size_t messageLength = messageStart.length();
-					messageLength += didYouMeanMessage.length();
-					for (std::string& prediction : topPredictions) {
-						messageLength += prediction.length() + 1/*\n*/;
-					}
-					messageLength += messageEnd.length();
-					topMessage.reserve(topMessage.length() + messageLength);
-					topMessage += messageStart;
-					topMessage += didYouMeanMessage;
-					for (std::string& prediction : topPredictions) {
-						topMessage += prediction;
-						topMessage += '\n';
-					}
-					topMessage += messageEnd;
-
-					client.sendMessage(message.channelID, topMessage, SleepyDiscord::Async);
-					return;
-				}
-
-				rapidjson::Document document;
-				document.Parse(response.text.c_str(), response.text.length());
-				if (document.HasParseError())
-					return;
-
-				SleepyDiscord::Embed embed{};
-
-				auto definitelyLegal = document.FindMember("definitely-legal");
-				if (definitelyLegal != document.MemberEnd() && definitelyLegal->value.IsBool())
-					embed.description += definitelyLegal->value.GetBool() ? "Definitely of legal age\n" :
-						"Definitely not of legal age\n";
-
-				auto year = document.FindMember("year");
-				if (year != document.MemberEnd() && year->value.IsInt())
-					embed.fields.push_back(SleepyDiscord::EmbedField{ "Birth Year",
-						std::to_string(year->value.GetInt()), true });
-
-				auto appearence = document.FindMember("age-group-by-appearance");
-				if (appearence != document.MemberEnd() && appearence->value.IsString())
-					embed.fields.push_back(SleepyDiscord::EmbedField{ "Looks like a(n)",
-						std::string{ appearence->value.GetString(), appearence->value.GetStringLength() }, true });
-
-				auto ageInShow = document.FindMember("age-in-show");
-				if (ageInShow != document.MemberEnd()) {
-					const auto addAgeInStory = [&embed](std::string value) {
-						embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
-							value, true });
-					};
-
-					if (ageInShow->value.IsInt()) {
-						addAgeInStory(std::to_string(ageInShow->value.GetInt()));
-					} else if (ageInShow->value.IsString()) {
-						addAgeInStory(std::string{ ageInShow->value.GetString(), ageInShow->value.GetStringLength() });
-					}
-				}
-					
-				auto image = document.FindMember("image");
-				if (image != document.MemberEnd() && image->value.IsString())
-					embed.image.url = std::string{ image->value.GetString(), image->value.GetStringLength() };
-
-				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
-
-				client.sendMessage(message.channelID, topMessage, embed,
-				SleepyDiscord::TTS::Default,
-				SleepyDiscord::Async);
-			});
+			client.createLegalInteractionResponse(interaction, std::move(waifuName), false);
 		}
 	});
 
@@ -748,5 +809,6 @@ int main() {
 
 	WaifuClient client(token);
 	client.setTokens(tokenDoc);
+	client.setIntents(0);
 	client.run();
 }
