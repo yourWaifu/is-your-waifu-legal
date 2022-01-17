@@ -324,13 +324,13 @@ public:
 			document.Parse(interaction.data.customID.c_str(), interaction.data.customID.length());
 			if (document.HasParseError())
 				return;
-			auto& command = document.FindMember("c");
+			auto command = document.FindMember("c");
 			if (command == document.MemberEnd())
 				return;
-			auto& data = document.FindMember("d");
+			auto data = document.FindMember("d");
 			if (data == document.MemberEnd() || !data->value.IsString())
 				return;
-			auto& user = document.FindMember("u");
+			auto user = document.FindMember("u");
 			if (user != document.MemberEnd() && user->value.IsString()) {
 				//check that user is the same
 				SleepyDiscord::Snowflake< SleepyDiscord::User> originalUserID(user->value);
@@ -429,7 +429,7 @@ public:
 
 		const auto allKeys = allKeysIterator->value.GetArray();
 		for (int i = 0; i < maxNumOfPredictions; i += 1) {
-			int index = topPrediction + i;
+			std::size_t index = topPrediction + i;
 			if (allKeys.Size() <= index)
 				break; //out of range
 			const auto& prediction = allKeys.operator[](index);
