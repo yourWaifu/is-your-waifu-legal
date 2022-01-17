@@ -161,6 +161,7 @@ private:
 				size_t linkSize =
 					1 + hashDisplay.length() + 2 +
 					htmlLinkMember->value.GetStringLength() + 1;
+				commitLink.reserve(linkSize);
 				commitLink += '[';
 				commitLink += hashDisplay;
 				commitLink += "](";
