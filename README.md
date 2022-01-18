@@ -4,7 +4,7 @@ It can be pretty hard to tell if a waifu is legal or a 100 year old dragon. Some
 
 ## Discord Bot
 
-Is Your Waifu Legal is also available as a Discord Bot. [Click here to invite](https://discordapp.com/oauth2/authorize?client_id=185977385416523776&scope=bot&permissions=18432). Just start your message with ``whcg``, short for **W**hite **H**aired **C**at **G**irl, and the name of the waifu.
+Is Your Waifu Legal is also available as a Discord Bot. [Click here to invite](https://discord.com/oauth2/authorize?client_id=185977385416523776&scope=applications.commands&permissions=18432). Just start your message with ``whcg``, short for **W**hite **H**aired **C**at **G**irl, and the name of the waifu.
  * [View on Discord Bot List (top.gg)](https://top.gg/bot/186151807699910656)
  * [View on Discord Bots](https://discord.bots.gg/bots/186151807699910656)
 
