@@ -1,4 +1,5 @@
 #include <unordered_set>
+#include <mutex>
 
 #include "sleepy_discord/sleepy_discord.h"
 #include "IO_file.h"
@@ -356,6 +357,23 @@ public:
 					return;
 				}
 			}
+			auto interactionIDMember = document.FindMember("i");
+			if (interactionIDMember != document.MemberEnd() && interactionIDMember->value.IsString()) {
+				//edit interaction id if avaiable
+				auto originalInteractionID = SleepyDiscord::Snowflake<SleepyDiscord::Interaction>(interactionIDMember->value);
+				std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>::iterator iterator;
+				if (findInteractionToken(originalInteractionID, iterator)) {
+					//edit ephemeral message
+					SleepyDiscord::Interaction::EditMessageResponse message;
+					message.data.content = "OK, look above this message.";
+					message.data.components = std::vector<std::shared_ptr<SleepyDiscord::BaseComponent>>{};
+					createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
+
+					auto newInteraction = interaction.token;
+					interaction.token = iterator->second;
+					interaction.ID = originalInteractionID;
+				}
+			}
 			
 			createLegalInteractionResponse(interaction,
 				std::string{ data->value.GetString(), data->value.GetStringLength() },
@@ -589,9 +607,9 @@ public:
 				std::vector<std::string> topPredictions = getSearchResults(waifuName);
 
 				SleepyDiscord::Interaction::Response<> response;
-				response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
 
 				if (topPredictions.empty()) {
+					response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
 					response.data.content = messageStart + messageEnd;
 					response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
 					createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
@@ -620,6 +638,10 @@ public:
 							rapidjson::Document::StringRefType{ userIDStr.c_str(), userIDStr.size() },
 							json.GetAllocator());
 					}
+					std::string interactionID = interaction.ID.string();
+					json.AddMember("i",
+						rapidjson::Document::StringRefType{ interactionID.c_str(), interactionID.size() },
+						json.GetAllocator());
 					json.AddMember("d",
 						rapidjson::Document::StringRefType{ prediction.c_str(), prediction.size() },
 						json.GetAllocator());
@@ -637,9 +659,18 @@ public:
 				topMessage += messageEnd;
 				topMessage += didYouMeanMessage;
 
-				response.data.content = topMessage;
-				response.data.components.push_back(actionRow);
-				createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+				response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+				response.data.content = "Waiting on user";
+				createInteractionResponse(interaction.ID, interaction.token, response,
+					{ SleepyDiscord::Async, [&, topMessage = std::move(topMessage), token = interaction.token, actionRow](SleepyDiscord::BooleanResponse) {
+						SleepyDiscord::FollowupMessage message;
+						message.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
+						message.content = topMessage;
+						message.components.push_back(actionRow);
+						createFollowupMessage(getID(), token, message, SleepyDiscord::Async);
+					} }
+				);
+				createInteractionSession(interaction.ID, interaction.token);
 				return;
 			}
 
@@ -687,13 +718,11 @@ public:
 			embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
 
 			if (updateMessage) {
-				SleepyDiscord::Interaction::EditMessageResponse message;
-				message.data.content = "";
-				message.data.embeds = std::vector<SleepyDiscord::Embed>{};
-				message.data.embeds->push_back(embed);
-				message.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::NONE;
-				message.data.components = std::vector<std::shared_ptr<SleepyDiscord::BaseComponent>>{};
-				createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
+				SleepyDiscord::EditWebhookParams message;
+				message.content = std::string{};
+				message.embeds = std::vector<SleepyDiscord::Embed>{};
+				message.embeds->push_back(embed);
+				editOriginalInteractionResponse(getID(), interaction.token, message, SleepyDiscord::Async);
 			}
 			else {
 				SleepyDiscord::Interaction::Response<> message;
@@ -712,6 +741,33 @@ private:
 	//Discord Bot status poster
 	std::string botsToken;
 	std::string topToken;
+
+	std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>
+		interactionSessions;
+	std::mutex interactionSessionsMutex;
+
+	void createInteractionSession(const SleepyDiscord::Snowflake<SleepyDiscord::Interaction>& interactionID, const std::string& interactionToken) {
+		//the interactionSessions can be access between threads so we should lock it to prevent issues
+		const std::lock_guard<std::mutex> lock(interactionSessionsMutex);
+		auto result = interactionSessions.insert({ interactionID, interactionToken }); //copy to pair, and then moves pair to map
+		if (result.second == true) { //if secceeded
+			schedule(
+				[&, interator = result.first]() {
+					const std::lock_guard<std::mutex> lock(interactionSessionsMutex);
+					interactionSessions.erase(interator);
+					//to do remove buttons too
+				}, 15 /*mins*/ * 60 /*seconds per min*/ * 1000 /*milliseconds*/);
+		}
+	}
+
+	bool findInteractionToken(
+		const SleepyDiscord::Snowflake<SleepyDiscord::Interaction>& interactionID,
+		std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>::iterator& target)
+	{
+		const std::lock_guard<std::mutex> lock(interactionSessionsMutex);
+		target = interactionSessions.find(interactionID);
+		return target != interactionSessions.end();
+	}
 
 	class BotStatusReporter {
 	public:
