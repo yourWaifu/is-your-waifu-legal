@@ -211,12 +211,20 @@ namespace Command {
 	>;
 	using CreateAppCommandAction = std::function<
 		void(WaifuClient&, SleepyDiscord::AppCommand&)>;
+	using MessageVerb = std::function<
+		void(
+			WaifuClient&,
+			SleepyDiscord::Message&,
+			std::queue<std::string>&
+			)
+	>;
 	struct Command {
 		std::string name;
 		std::string description;
 		std::vector<std::string> params;
 		CreateAppCommandAction createAppCommand;
 		Verb verb;
+		MessageVerb messageVerb;
 	};
 	using MappedCommands = std::unordered_map<std::string, Command>;
 	using MappedCommand = MappedCommands::value_type;
@@ -352,6 +360,63 @@ public:
 			createLegalInteractionResponse(interaction,
 				std::string{ data->value.GetString(), data->value.GetStringLength() },
 				true);
+		}
+	}
+
+	void onMessage(SleepyDiscord::Message message) override {
+		if (message.isMentioned(getID()) || message.startsWith("whcg "))
+		{
+			std::queue<std::string> parameters = split(message.content);
+			const std::string mention = "<@" + getID().string() + ">";
+			const std::string mentionNick = "<@!" + getID().string() + ">";
+			if (
+				!(
+					//only allow if has more then 1 parameter 
+					1 < parameters.size() && (
+						//only allow if starts with a mention
+						parameters.front() == mention || parameters.front() == mentionNick ||
+						//or starts with whcg
+						parameters.front() == "whcg"
+						)
+					)
+				)
+				return;
+
+			//remove the parameters as we go
+			parameters.pop();
+			if (parameters.empty())
+				return;
+
+			//get command
+			Command::MappedCommands::iterator foundCommand =
+				Command::all.find(parameters.front());
+			if (foundCommand == Command::all.end()) {
+				if (Command::defaultCommand != nullptr) {
+					Command::defaultCommand->messageVerb(*this, message, parameters);
+				}
+				else {
+					sendMessage(message.channelID, "Error: Command not found", SleepyDiscord::Async);
+				}
+				return;
+			}
+			parameters.pop();
+			if (
+				parameters.size() <
+				foundCommand->second.params.size()
+				) {
+				sendMessage(message.channelID, "Error: Too few parameters", SleepyDiscord::Async);
+				return;
+			}
+
+			//call command
+			foundCommand->second.messageVerb(*this, message, parameters);
+		}
+		// else if channel is the github updates channel, update search tree
+		else if (message.channelID == "700570024523595786") {
+			//we have the github webhook set up to only send page build updates
+			asio::post([this]() {
+				updateSearchTree();
+				});
 		}
 	}
 
@@ -768,10 +833,21 @@ int main() {
 			WaifuClient& client,
 			SleepyDiscord::Interaction& interaction
 		) {
+			std::string& username = !interaction.user.ID.empty() ?
+				interaction.user.username
+				: interaction.member.user.username;
+
 			SleepyDiscord::Interaction::Response<> response;
 			response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
-			response.data.content = "Hello";
+			response.data.content = "Hello " + username;
 			client.createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+		},
+		[](
+			WaifuClient& client,
+			SleepyDiscord::Message& message,
+			std::queue<std::string>& params
+		) {
+			client.sendMessage(message.channelID, "Hello, " + message.author.username, SleepyDiscord::Async);
 		}
 	});
 
@@ -803,6 +879,183 @@ int main() {
 			}
 
 			client.createLegalInteractionResponse(interaction, std::move(waifuName), false);
+		},
+		//a copy of the old version because I don't feel like making a better solution right now
+		//this will be removed after the scope migration
+		[](
+			WaifuClient& client,
+			SleepyDiscord::Message& message,
+			std::queue<std::string>& params
+		) {
+			if (params.empty())
+				return;
+
+			std::string waifuName{};
+			waifuName.reserve(message.content.length());
+
+			while (true) {
+				waifuName += params.front();
+				params.pop();
+				if (!params.empty()) {
+					waifuName += "%20";
+				} else {
+					break;
+				}
+			}
+			makeLowerCaseOnly(waifuName);
+
+			asio::post([waifuName, &client, message]() {
+				auto response = cpr::Get(
+					cpr::Url{ "https://yourwaifu.dev/is-your-waifu-legal/waifus/" +
+					waifuName + ".json" });
+
+				std::string topMessage;
+
+				if (response.status_code != 200) {
+					const std::string messageStart =
+						"Couldn't find the waifu you requested.\n";
+					const std::string messageEnd =
+						"You can add them by following this link: "
+						"<https://github.com/yourWaifu/is-your-waifu-legal#how-to-add-a-waifu-to-the-list>";
+					const auto failure = [=, &client]() {
+						client.sendMessage(message.channelID,
+							messageStart + messageEnd,
+							SleepyDiscord::Async);
+					};
+
+					//use the search tree to get predictions on what the user wanted
+					const auto& searchTree = client.getSearchTree();
+					if (searchTree.HasParseError())
+						return failure();
+					
+					const auto searchRootIterator = searchTree.FindMember("root");
+					if (searchRootIterator == searchTree.MemberEnd() || !searchRootIterator->value.IsObject())
+						return failure();
+
+					const auto& searchRootValue = searchRootIterator->value;
+					auto childrenIterator = searchRootValue.FindMember("c"/*children*/);
+					if (childrenIterator == searchRootValue.MemberEnd() || !childrenIterator->value.IsObject())
+						return failure();
+
+					const auto allKeysIterator = searchTree.FindMember("allKeys");
+					if (allKeysIterator == searchTree.MemberEnd() || !allKeysIterator->value.IsArray())
+						return failure();
+
+					size_t letterIndex = 0;
+					auto position = searchRootIterator;
+					for (const std::string::value_type& letter : waifuName) {
+						const auto branches = position->value.FindMember("c"/*children*/);
+						if (branches == position->value.MemberEnd())
+							break;
+						rapidjson::Value letterValue;
+						letterValue.SetString(&letter, 1);
+						auto nextPosition = branches->value.FindMember(letterValue);
+						if (nextPosition == branches->value.MemberEnd() || nextPosition->value.IsNull())
+							break;
+
+						position = nextPosition;
+						letterIndex += 1;
+					}
+					
+					auto topPredictionIterator = position->value.FindMember("v"/*value*/);
+					if (topPredictionIterator == position->value.MemberEnd() ||
+						!topPredictionIterator->value.IsInt() || letterIndex == 0)
+						return failure();
+
+					const nonstd::string_view lettersInCommonAtStart{
+						waifuName.c_str(), letterIndex
+					};
+					const int maxNumOfPredictions = 5;
+					int topPrediction = topPredictionIterator->value.GetInt();
+					std::vector<std::string> topPredictions;
+					topPredictions.reserve(maxNumOfPredictions);
+					
+					const auto allKeys = allKeysIterator->value.GetArray();
+					for (int i = 0; i < maxNumOfPredictions; i += 1) {
+						int index = topPrediction + i;
+						if (allKeys.Size() <= index)
+							break; //out of range
+						const auto& prediction = allKeys.operator[](index);
+						//check if it starts with letters in common
+						if (prediction.GetStringLength() < letterIndex)
+							//too small
+							break;
+						if (nonstd::string_view{ prediction.GetString(), letterIndex } ==
+							lettersInCommonAtStart)
+						{
+							topPredictions.emplace_back(prediction.GetString(), prediction.GetStringLength());
+						}
+					}
+					
+					std::string didYouMeanMessage = "Did you mean: \n";
+					size_t messageLength = messageStart.length();
+					messageLength += didYouMeanMessage.length();
+					for (std::string& prediction : topPredictions) {
+						messageLength += prediction.length() + 1/*\n*/;
+					}
+					messageLength += messageEnd.length();
+					topMessage.reserve(topMessage.length() + messageLength);
+					topMessage += messageStart;
+					topMessage += didYouMeanMessage;
+					for (std::string& prediction : topPredictions) {
+						topMessage += prediction;
+						topMessage += '\n';
+					}
+					topMessage += messageEnd;
+
+					client.sendMessage(message.channelID, topMessage, SleepyDiscord::Async);
+					return;
+				}
+
+				rapidjson::Document document;
+				document.Parse(response.text.c_str(), response.text.length());
+				if (document.HasParseError())
+					return;
+
+				SleepyDiscord::Embed embed{};
+
+				auto definitelyLegal = document.FindMember("definitely-legal");
+				if (definitelyLegal != document.MemberEnd() && definitelyLegal->value.IsBool())
+					embed.description += definitelyLegal->value.GetBool() ? "Definitely of legal age\n" :
+						"Definitely not of legal age\n";
+
+				auto year = document.FindMember("year");
+				if (year != document.MemberEnd() && year->value.IsInt())
+					embed.fields.push_back(SleepyDiscord::EmbedField{ "Birth Year",
+						std::to_string(year->value.GetInt()), true });
+
+				auto appearence = document.FindMember("age-group-by-appearance");
+				if (appearence != document.MemberEnd() && appearence->value.IsString())
+					embed.fields.push_back(SleepyDiscord::EmbedField{ "Looks like a(n)",
+						std::string{ appearence->value.GetString(), appearence->value.GetStringLength() }, true });
+
+				auto ageInShow = document.FindMember("age-in-show");
+				if (ageInShow != document.MemberEnd()) {
+					const auto addAgeInStory = [&embed](std::string value) {
+						embed.fields.push_back(SleepyDiscord::EmbedField{ "Age in Story",
+							value, true });
+					};
+
+					if (ageInShow->value.IsInt()) {
+						addAgeInStory(std::to_string(ageInShow->value.GetInt()));
+					} else if (ageInShow->value.IsString()) {
+						addAgeInStory(std::string{ ageInShow->value.GetString(), ageInShow->value.GetStringLength() });
+					}
+				}
+					
+				auto image = document.FindMember("image");
+				if (image != document.MemberEnd() && image->value.IsString())
+					embed.image.url = std::string{ image->value.GetString(), image->value.GetStringLength() };
+
+				embed.description += "[Source](https://yourwaifu.dev/is-your-waifu-legal/?q=" + waifuName + ')';
+
+				SleepyDiscord::SendMessageParams messageToSend;
+				messageToSend.channelID = message.channelID;
+				messageToSend.content = topMessage;
+				messageToSend.embed = embed;
+
+				client.sendMessage(messageToSend, SleepyDiscord::Async);
+			});
 		}
 	});
 
@@ -810,6 +1063,6 @@ int main() {
 
 	WaifuClient client(token);
 	client.setTokens(tokenDoc);
-	client.setIntents(0);
+	client.setIntents(SleepyDiscord::Intent::SERVER_MESSAGES);
 	client.run();
 }
