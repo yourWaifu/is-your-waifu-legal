@@ -1063,6 +1063,6 @@ int main() {
 
 	WaifuClient client(token);
 	client.setTokens(tokenDoc);
-	client.setIntents(SleepyDiscord::Intent::SERVER_MESSAGES);
+	client.setIntents(SleepyDiscord::Intent::SERVER_MESSAGES, SleepyDiscord::Intent::SERVERS);
 	client.run();
 }
