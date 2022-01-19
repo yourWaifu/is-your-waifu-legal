@@ -333,51 +333,50 @@ public:
 			document.Parse(interaction.data.customID.c_str(), interaction.data.customID.length());
 			if (document.HasParseError())
 				return;
-			auto command = document.FindMember("c");
-			if (command == document.MemberEnd())
+			auto interactionIDMember = document.FindMember("id");
+			if (interactionIDMember == document.MemberEnd() || !interactionIDMember->value.IsString())
 				return;
-			auto data = document.FindMember("d");
-			if (data == document.MemberEnd() || !data->value.IsString())
-				return;
-			auto user = document.FindMember("u");
-			if (user != document.MemberEnd() && user->value.IsString()) {
-				//check that user is the same
-				SleepyDiscord::Snowflake< SleepyDiscord::User> originalUserID(user->value);
-				SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
-				if (!interaction.member.ID.empty())
-					userID = interaction.member.ID;
-				else if (!interaction.user.ID.empty())
-					userID = interaction.user.ID;
-				if (!userID.empty() && originalUserID != userID) {
-					SleepyDiscord::Interaction::Response<> response;
-					response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
-					response.data.content = "You aren't the original user";
-					response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
-					createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
-					return;
-				}
-			}
-			auto interactionIDMember = document.FindMember("i");
-			if (interactionIDMember != document.MemberEnd() && interactionIDMember->value.IsString()) {
-				//edit interaction id if avaiable
-				auto originalInteractionID = SleepyDiscord::Snowflake<SleepyDiscord::Interaction>(interactionIDMember->value);
-				std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>::iterator iterator;
-				if (findInteractionToken(originalInteractionID, iterator)) {
-					//edit ephemeral message
-					SleepyDiscord::Interaction::EditMessageResponse message;
-					message.data.content = "OK, look above this message.";
-					message.data.components = std::vector<std::shared_ptr<SleepyDiscord::BaseComponent>>{};
-					createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
 
-					auto newInteraction = interaction.token;
-					interaction.token = iterator->second;
-					interaction.ID = originalInteractionID;
-				}
+			auto originalInteractionID = SleepyDiscord::Snowflake<SleepyDiscord::Interaction>(interactionIDMember->value);
+			std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, InteractionSession>::iterator iterator;
+			if (!findInteractionToken(originalInteractionID, iterator))
+				return;
+
+			auto& interactionSession = iterator->second;
+
+			SleepyDiscord::Interaction::EditMessageResponse message;
+			message.data.content = "OK, look above this message.";
+			message.data.components = std::vector<std::shared_ptr<SleepyDiscord::BaseComponent>>{};
+			createInteractionResponse(interaction.ID, interaction.token, message, SleepyDiscord::Async);
+
+			auto newInteraction = interaction.token;
+			interaction.token = interactionSession.token;
+			interaction.ID = originalInteractionID;
+
+			//check that user is the same
+			SleepyDiscord::Snowflake< SleepyDiscord::User> originalUserID(interactionSession.userID);
+			SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
+			if (!interaction.member.ID.empty())
+				userID = interaction.member.ID;
+			else if (!interaction.user.ID.empty())
+				userID = interaction.user.ID;
+			if (!userID.empty() && originalUserID != userID) {
+				SleepyDiscord::Interaction::Response<> response;
+				response.type = SleepyDiscord::InteractionCallbackType::ChannelMessageWithSource;
+				response.data.content = "You aren't the original user";
+				response.data.flags = SleepyDiscord::InteractionCallback::Message::Flags::Ephemeral;
+				createInteractionResponse(interaction.ID, interaction.token, response, SleepyDiscord::Async);
+				return;
 			}
+
+			auto indexMember = document.FindMember("in");
+			if (indexMember == document.MemberEnd() || !indexMember->value.IsInt())
+				return;
+			auto index = indexMember->value.GetInt();
+
+			WaifuButton& button = interactionSession.buttons[index];
 			
-			createLegalInteractionResponse(interaction,
-				std::string{ data->value.GetString(), data->value.GetStringLength() },
-				true);
+			createLegalInteractionResponse(interaction, button.waifuName, true);
 		}
 	}
 
@@ -617,8 +616,21 @@ public:
 				}
 
 				std::string didYouMeanMessage = "\nDid you mean: \n";
+
+				InteractionSession session;
+				session.token = interaction.token;
+				SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
+				if (!interaction.member.ID.empty())
+					userID = interaction.member.ID;
+				else if (!interaction.user.ID.empty())
+					userID = interaction.user.ID;
+				if (!userID.empty()) {
+					session.userID = userID;
+				}
+
 				//use buttons
 				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+				std::size_t index = 0;
 				for (std::string& prediction : topPredictions) {
 					auto button = std::make_shared<SleepyDiscord::Button>();
 					button->style = SleepyDiscord::ButtonStyle::Primary;
@@ -626,28 +638,16 @@ public:
 					//data to json for button
 					rapidjson::Document json;
 					json.SetObject();
-					json.AddMember("c", "legal", json.GetAllocator());
-					SleepyDiscord::Snowflake<SleepyDiscord::User> userID;
-					if (!interaction.member.ID.empty())
-						userID = interaction.member.ID;
-					else if (!interaction.user.ID.empty())
-						userID = interaction.user.ID;
-					if (!userID.empty()) {
-						const auto& userIDStr = userID.string();
-						json.AddMember("u",
-							rapidjson::Document::StringRefType{ userIDStr.c_str(), userIDStr.size() },
-							json.GetAllocator());
-					}
 					std::string interactionID = interaction.ID.string();
-					json.AddMember("i",
+					json.AddMember("id",
 						rapidjson::Document::StringRefType{ interactionID.c_str(), interactionID.size() },
 						json.GetAllocator());
-					json.AddMember("d",
-						rapidjson::Document::StringRefType{ prediction.c_str(), prediction.size() },
-						json.GetAllocator());
+					json.AddMember("in", index, json.GetAllocator());
 					button->customID = SleepyDiscord::json::stringify(json);
 
 					actionRow->components.push_back(button);
+					session.buttons.push_back(WaifuButton{ prediction });
+					index += 1;
 				}
 
 				size_t messageLength = messageStart.length();
@@ -670,7 +670,7 @@ public:
 						createFollowupMessage(getID(), token, message, SleepyDiscord::Async);
 					} }
 				);
-				createInteractionSession(interaction.ID, interaction.token);
+				createInteractionSession(interaction.ID, std::move(session));
 				return;
 			}
 
@@ -742,14 +742,25 @@ private:
 	std::string botsToken;
 	std::string topToken;
 
-	std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>
+	struct WaifuButton {
+		std::string waifuName = "";
+	};
+
+	struct InteractionSession {
+		std::string token = "";
+		SleepyDiscord::Snowflake<SleepyDiscord::User> userID = {};
+		std::vector<WaifuButton> buttons = {};
+	};
+
+	std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, InteractionSession>
 		interactionSessions;
+
 	std::mutex interactionSessionsMutex;
 
-	void createInteractionSession(const SleepyDiscord::Snowflake<SleepyDiscord::Interaction>& interactionID, const std::string& interactionToken) {
+	void createInteractionSession(const SleepyDiscord::Snowflake<SleepyDiscord::Interaction>& interactionID, InteractionSession interactionSession) {
 		//the interactionSessions can be access between threads so we should lock it to prevent issues
 		const std::lock_guard<std::mutex> lock(interactionSessionsMutex);
-		auto result = interactionSessions.insert({ interactionID, interactionToken }); //copy to pair, and then moves pair to map
+		auto result = interactionSessions.insert({ interactionID, std::move(interactionSession) }); //copy/move to pair, and then moves pair to map
 		if (result.second == true) { //if secceeded
 			schedule(
 				[&, interator = result.first]() {
@@ -762,7 +773,7 @@ private:
 
 	bool findInteractionToken(
 		const SleepyDiscord::Snowflake<SleepyDiscord::Interaction>& interactionID,
-		std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, std::string>::iterator& target)
+		std::unordered_map<SleepyDiscord::Snowflake<SleepyDiscord::Interaction>, InteractionSession>::iterator& target)
 	{
 		const std::lock_guard<std::mutex> lock(interactionSessionsMutex);
 		target = interactionSessions.find(interactionID);
