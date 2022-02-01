@@ -1,0 +1,11 @@
+{
+	"type" : 0,
+	"english-name" : "Al Sneed",
+	"image" : "https://static.wikia.nocookie.net/simpsons/images/1/14/Al_Sneed.png/revision/latest?cb=20210430000431",
+	"japanese-name" : "Al Sneed",
+  "aliases": ["Sneed"],
+	"year" : 1999,
+	"month" : 11,
+	"day-of-month" : 7,
+	"sources" : ["https://simpsons.fandom.com/wiki/Al_Sneed", "https://simpsons.fandom.com/wiki/Sneed%27s_Feed_%26_Seed"]
+}
