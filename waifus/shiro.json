@@ -1,0 +1,20 @@
+{
+	"type": 0,
+	"english-name": "Shiro",
+	"japanese-name": "白/しろ",
+	"aliases": [
+		"『　　』",
+		"Blank",
+		"Kuhaku"
+	],
+	"image": "https://static.wikia.nocookie.net/no-game-no-life/images/d/dc/Shiro_Anime_HQ.png",
+	"sources": [
+		"https://no-game-no-life.fandom.com/wiki/Shiro"
+	],
+	"definitely-legal": false,
+	"is-a-trap": false,
+	"month": 7,
+	"day-of-month": 27,
+	"age-group-by-appearance": "child",
+	"age-in-show": 11
+}
