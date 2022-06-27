@@ -1,0 +1,14 @@
+
+{
+	"type" : 0,
+	"english-name" : "Kujo Jotaro",
+	"image" : "https://static.wikia.nocookie.net/jjba/images/0/01/JotaroProfile.png",
+	"japanese-name" : "(空条 承太郎",
+	"year" : 1970,
+	"month" : null,
+	"day-of-month" : null,
+	"definitely-legal": true,
+  "age-in-show": 17,
+	"notes": ["Yare yare daze"],
+	"sources" : ["https://jojo.fandom.com/wiki/Jotaro_Kujo"]
+}
