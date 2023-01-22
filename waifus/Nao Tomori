@@ -1,0 +1,10 @@
+{
+	"type" : 0,
+	"english-name" : "Nao Tomori",
+	"image" : "https://image.noelshack.com/fichiers/2018/16/5/1524258971-nao-tomori14.png",
+	"japanese-name" : "友利 奈緒",
+	"age-in-show": 16,
+  "age-group-by-appearance": "teenager",
+  "definitely-legal": false,
+	"sources" : ["https://charlotte.fandom.com/fr/wiki/Nao_Tomori"]
+}
